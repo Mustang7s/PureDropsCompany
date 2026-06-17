@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 
 // ---------------------------------------------------------------------------
 // Global parallax-enabled store
