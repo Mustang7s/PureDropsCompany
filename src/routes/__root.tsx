@@ -77,16 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Pure Drops Water Station — Pure in Every Drop" },
+      { name: "description", content: "Advanced filtration, clean drinking water and free doorstep delivery across Kenya. 1L, 5L, 10L & 20L. Call 0141 409 800." },
+      { property: "og:title", content: "Pure Drops Water Station" },
+      { property: "og:description", content: "Clinical-grade purified water delivered free to your home, office or shop." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" },
       {
         rel: "stylesheet",
         href: appCss,
