@@ -1,4 +1,70 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+
+// ---------------------------------------------------------------------------
+// Global parallax-enabled store
+// ---------------------------------------------------------------------------
+// Source of truth lives outside React so the hooks below and the UI toggle
+// stay in sync. Defaults to OFF when the user has `prefers-reduced-motion`,
+// otherwise ON. The user's explicit choice (via the toggle) is persisted to
+// localStorage and overrides the OS preference.
+
+const STORAGE_KEY = "pure-drops:parallax-enabled";
+const listeners = new Set<() => void>();
+let enabled = true;
+let initialized = false;
+
+function prefersReducedMotion() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function init() {
+  if (initialized || typeof window === "undefined") return;
+  initialized = true;
+  const stored = window.localStorage.getItem(STORAGE_KEY);
+  if (stored === "true" || stored === "false") {
+    enabled = stored === "true";
+  } else {
+    enabled = !prefersReducedMotion();
+  }
+
+  // Track OS-level changes while the user has no explicit override.
+  const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+  mql.addEventListener?.("change", (e) => {
+    if (window.localStorage.getItem(STORAGE_KEY) !== null) return;
+    enabled = !e.matches;
+    listeners.forEach((l) => l());
+  });
+}
+
+function subscribe(l: () => void) {
+  init();
+  listeners.add(l);
+  return () => listeners.delete(l);
+}
+
+function getSnapshot() {
+  init();
+  return enabled;
+}
+
+function getServerSnapshot() {
+  return true;
+}
+
+export function setParallaxEnabled(next: boolean, remember = true) {
+  init();
+  enabled = next;
+  if (remember && typeof window !== "undefined") {
+    window.localStorage.setItem(STORAGE_KEY, String(next));
+  }
+  listeners.forEach((l) => l());
+}
+
+export function useParallaxEnabled(): [boolean, (next: boolean) => void] {
+  const value = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  return [value, (next: boolean) => setParallaxEnabled(next)];
+}
 
 /**
  * Apply a translateY parallax transform to the returned ref based on the
@@ -8,14 +74,17 @@ import { useEffect, useRef } from "react";
  */
 export function useParallax<T extends HTMLElement>(speed = 0.15) {
   const ref = useRef<T | null>(null);
+  const isEnabled = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     if (typeof window === "undefined") return;
 
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
+    if (!isEnabled) {
+      el.style.transform = "";
+      return;
+    }
 
     let frame = 0;
     const update = () => {
@@ -39,7 +108,7 @@ export function useParallax<T extends HTMLElement>(speed = 0.15) {
       window.removeEventListener("resize", onScroll);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, [speed]);
+  }, [speed, isEnabled]);
 
   return ref;
 }
@@ -50,14 +119,14 @@ export function useParallax<T extends HTMLElement>(speed = 0.15) {
  */
 export function useReveal<T extends HTMLElement>() {
   const ref = useRef<T | null>(null);
+  const isEnabled = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     if (typeof window === "undefined") return;
 
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
+    if (!isEnabled) {
       el.classList.add("is-revealed");
       return;
     }
@@ -75,7 +144,7 @@ export function useReveal<T extends HTMLElement>() {
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [isEnabled]);
 
   return ref;
 }
