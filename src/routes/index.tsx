@@ -5,6 +5,7 @@ import bottle1L from "@/assets/bottle-1l.jpg";
 import bottle5L from "@/assets/bottle-5l.jpg";
 import bottle10L from "@/assets/bottle-10l.jpg";
 import bottle20L from "@/assets/bottle-20l.jpg";
+import { useParallax, useReveal } from "@/hooks/use-parallax";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -28,6 +29,15 @@ const PureLogo = ({ className = "" }: { className?: string }) => (
 );
 
 function Index() {
+  const heroImgRef = useParallax<HTMLDivElement>(0.35);
+  const heroPatternRef = useParallax<HTMLDivElement>(-0.2);
+  const productsBgRef = useParallax<HTMLDivElement>(-0.15);
+  const ctaBgRef = useParallax<HTMLDivElement>(0.25);
+  const servicesRevealRef = useReveal<HTMLDivElement>();
+  const productsRevealRef = useReveal<HTMLDivElement>();
+  const audienceRevealRef = useReveal<HTMLDivElement>();
+  const reviewsRevealRef = useReveal<HTMLDivElement>();
+
   const products = [
     { size: "1L", label: "Pocket Carry", tier: "01 / PERSONAL", price: "KES 50", img: bottle1L },
     { size: "5L", label: "Tabletop", tier: "02 / FAMILY", price: "KES 200", img: bottle5L },
@@ -100,13 +110,14 @@ function Index() {
         </div>
         <div className="relative grid place-items-center overflow-hidden bg-surface p-8 md:p-12">
           <div
-            className="absolute inset-0 opacity-10"
+            ref={heroPatternRef}
+            className="parallax absolute -inset-10 opacity-10"
             style={{
               backgroundImage: "radial-gradient(circle at 2px 2px, var(--brand) 1px, transparent 0)",
               backgroundSize: "40px 40px",
             }}
           />
-          <div className="relative z-10 w-full max-w-sm overflow-hidden rounded-2xl border border-brand/5 bg-white shadow-2xl shadow-brand/10">
+          <div ref={heroImgRef} className="parallax relative z-10 w-full max-w-sm overflow-hidden rounded-2xl border border-brand/5 bg-white shadow-2xl shadow-brand/10">
             <img src={heroBottle} alt="Pure Drops 20L water dispenser" width={896} height={1120} className="h-auto w-full object-cover" />
           </div>
         </div>
@@ -124,7 +135,7 @@ function Index() {
       </div>
 
       {/* Services */}
-      <section id="services" className="mx-auto max-w-7xl px-6 py-24">
+      <section id="services" ref={servicesRevealRef} className="reveal mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
             <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">What we do</h2>
@@ -148,8 +159,12 @@ function Index() {
       </section>
 
       {/* Products */}
-      <section id="products" className="bg-surface px-6 py-24">
-        <div className="mx-auto max-w-7xl">
+      <section id="products" className="relative overflow-hidden bg-surface px-6 py-24">
+        <div
+          ref={productsBgRef}
+          className="parallax pointer-events-none absolute -right-32 -top-32 size-[28rem] rounded-full bg-brand/5 blur-3xl"
+        />
+        <div ref={productsRevealRef} className="reveal relative mx-auto max-w-7xl">
           <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
               <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">The Collection</h2>
@@ -198,7 +213,7 @@ function Index() {
       </section>
 
       {/* Audience */}
-      <section id="audience" className="mx-auto max-w-7xl px-6 py-24">
+      <section id="audience" ref={audienceRevealRef} className="reveal mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 max-w-2xl">
           <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">Who we serve</h2>
           <p className="text-4xl font-bold tracking-tight">Hydrating Homes, Offices & Shops.</p>
@@ -220,7 +235,7 @@ function Index() {
 
       {/* Testimonials */}
       <section id="reviews" className="bg-surface px-6 py-24">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-3">
+        <div ref={reviewsRevealRef} className="reveal mx-auto grid max-w-7xl gap-12 lg:grid-cols-3">
           <div className="lg:col-span-1">
             <h2 className="mb-6 text-4xl font-bold tracking-tight">Trusted by families & businesses.</h2>
             <p className="mb-8 text-brand/60">Join 2,000+ happy customers in Kenya who prioritize their health with Pure Drops.</p>
@@ -257,8 +272,12 @@ function Index() {
       </section>
 
       {/* CTA */}
-      <section className="px-6 py-24">
-        <div className="mx-auto max-w-5xl rounded-[40px] bg-brand p-12 text-center text-white md:p-20">
+      <section className="relative overflow-hidden px-6 py-24">
+        <div
+          ref={ctaBgRef}
+          className="parallax pointer-events-none absolute left-1/2 top-1/2 -z-0 size-[40rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent-green/10 blur-3xl"
+        />
+        <div className="relative mx-auto max-w-5xl rounded-[40px] bg-brand p-12 text-center text-white md:p-20">
           <h2 className="mb-6 text-4xl font-extrabold tracking-tight md:text-6xl">
             Pure Water, <span className="text-accent-green">Pure Life.</span>
           </h2>
