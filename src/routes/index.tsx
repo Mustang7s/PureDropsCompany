@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Phone, MessageCircle, Droplet, ShieldCheck, Truck, Filter, Home, Building2, Store, ArrowRight, Star, Check } from "lucide-react";
+import { Phone, MessageCircle, Droplet, ShieldCheck, Truck, Filter, Home, Building2, Store, ArrowRight, Star, Check, Waves } from "lucide-react";
 import heroBottle from "@/assets/hero-bottle.jpg";
 import bottle1L from "@/assets/bottle-1l.jpg";
 import bottle5L from "@/assets/bottle-5l.jpg";
 import bottle10L from "@/assets/bottle-10l.jpg";
 import bottle20L from "@/assets/bottle-20l.jpg";
-import { useParallax, useReveal } from "@/hooks/use-parallax";
+import { useParallax, useReveal, useParallaxEnabled } from "@/hooks/use-parallax";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -29,6 +29,7 @@ const PureLogo = ({ className = "" }: { className?: string }) => (
 );
 
 function Index() {
+  const [parallaxOn, setParallaxOn] = useParallaxEnabled();
   const heroImgRef = useParallax<HTMLDivElement>(0.35);
   const heroPatternRef = useParallax<HTMLDivElement>(-0.2);
   const productsBgRef = useParallax<HTMLDivElement>(-0.15);
@@ -73,6 +74,20 @@ function Index() {
           <a href="#reviews" className="transition-colors hover:text-accent-green">Reviews</a>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setParallaxOn(!parallaxOn)}
+            aria-pressed={parallaxOn}
+            title={parallaxOn ? "Disable parallax animations" : "Enable parallax animations"}
+            className={`hidden size-9 place-items-center rounded-full border transition-colors sm:grid ${
+              parallaxOn
+                ? "border-accent-green/30 bg-accent-green/10 text-accent-green"
+                : "border-brand/10 text-brand/50 hover:text-brand"
+            }`}
+          >
+            <Waves className="size-4" aria-hidden="true" />
+            <span className="sr-only">{parallaxOn ? "Disable" : "Enable"} parallax animations</span>
+          </button>
           <a href={`tel:${PHONE.replace(/\s/g, "")}`} className="hidden font-mono text-xs font-medium opacity-70 hover:text-accent-green sm:block">
             {PHONE}
           </a>
