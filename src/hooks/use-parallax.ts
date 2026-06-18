@@ -121,15 +121,147 @@ export function useParallaxEnabled(): [boolean, (next: boolean) => void] {
   return [value, (next: boolean) => setParallaxEnabled(next)];
 }
 
+// ---------------------------------------------------------------------------
+// Per-section parallax store
+// ---------------------------------------------------------------------------
+// Each section that uses parallax registers itself with a stable key + label.
+// Users can toggle individual sections from the UI, and useParallax/useReveal
+// will only run when BOTH the global toggle AND the section toggle are on.
+
+const SECTION_STORAGE_KEY = "pure-drops:parallax-sections";
+const sectionListeners = new Set<() => void>();
+const sectionMeta = new Map<string, string>(); // key -> label
+const sectionState = new Map<string, boolean>(); // key -> enabled
+let sectionInitialized = false;
+let sectionsSnapshot: ReadonlyArray<{ key: string; label: string; enabled: boolean }> = [];
+
+function rebuildSectionsSnapshot() {
+  sectionsSnapshot = Array.from(sectionMeta.entries()).map(([key, label]) => ({
+    key,
+    label,
+    enabled: sectionState.get(key) ?? true,
+  }));
+}
+
+function loadSectionState() {
+  if (sectionInitialized || typeof window === "undefined") return;
+  sectionInitialized = true;
+  try {
+    const raw = window.localStorage.getItem(SECTION_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Record<string, boolean>;
+      for (const [k, v] of Object.entries(parsed)) sectionState.set(k, !!v);
+    }
+  } catch {
+    /* ignore corrupt storage */
+  }
+}
+
+function persistSectionState() {
+  if (typeof window === "undefined") return;
+  const obj: Record<string, boolean> = {};
+  for (const [k, v] of sectionState.entries()) obj[k] = v;
+  try {
+    window.localStorage.setItem(SECTION_STORAGE_KEY, JSON.stringify(obj));
+  } catch {
+    /* ignore quota errors */
+  }
+}
+
+function notifySections() {
+  rebuildSectionsSnapshot();
+  sectionListeners.forEach((l) => l());
+}
+
+function registerSection(key: string, label: string) {
+  loadSectionState();
+  const hadKey = sectionMeta.has(key);
+  sectionMeta.set(key, label);
+  if (!sectionState.has(key)) sectionState.set(key, true);
+  if (!hadKey) notifySections();
+}
+
+export function setSectionParallaxEnabled(key: string, next: boolean) {
+  loadSectionState();
+  if (sectionState.get(key) === next) return;
+  sectionState.set(key, next);
+  persistSectionState();
+  notifySections();
+}
+
+function subscribeSections(l: () => void) {
+  loadSectionState();
+  sectionListeners.add(l);
+  return () => sectionListeners.delete(l);
+}
+function getSectionsSnapshot() {
+  return sectionsSnapshot;
+}
+function getSectionsServerSnapshot() {
+  return sectionsSnapshot;
+}
+
+/** List of all sections that have registered themselves, with current enabled state. */
+export function useParallaxSections() {
+  return useSyncExternalStore(subscribeSections, getSectionsSnapshot, getSectionsServerSnapshot);
+}
+
+/** Returns whether a given section's parallax is currently on (does NOT register). */
+function getSectionEnabled(key: string) {
+  loadSectionState();
+  return sectionState.get(key) ?? true;
+}
+
+function subscribeSectionKey(key: string) {
+  return (l: () => void) => {
+    loadSectionState();
+    const wrapped = () => l();
+    sectionListeners.add(wrapped);
+    return () => sectionListeners.delete(wrapped);
+  };
+}
+
+/**
+ * Register a section and subscribe to its enabled state. Use this if you want
+ * to read or toggle a single section from a component.
+ */
+export function useSectionParallax(key: string, label: string): [boolean, (next: boolean) => void] {
+  useEffect(() => {
+    registerSection(key, label);
+  }, [key, label]);
+  const enabledForSection = useSyncExternalStore(
+    subscribeSectionKey(key),
+    () => getSectionEnabled(key),
+    () => true,
+  );
+  return [enabledForSection, (next: boolean) => setSectionParallaxEnabled(key, next)];
+}
+
 /**
  * Apply a translateY parallax transform to the returned ref based on the
  * element's position in the viewport. `speed` is the fraction of scroll
  * distance to translate; positive values move the element up as the user
  * scrolls down (foreground feel), negative values move it down (background).
+ *
+ * Optionally pass `{ section: { key, label } }` to bind this element to a
+ * named section so users can toggle it independently from the UI.
  */
-export function useParallax<T extends HTMLElement>(speed = 0.15) {
+export function useParallax<T extends HTMLElement>(
+  speed = 0.15,
+  options?: { section?: { key: string; label: string } },
+) {
   const ref = useRef<T | null>(null);
-  const isEnabled = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const globalEnabled = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const section = options?.section;
+  useEffect(() => {
+    if (section) registerSection(section.key, section.label);
+  }, [section?.key, section?.label]);
+  const sectionEnabled = useSyncExternalStore(
+    section ? subscribeSectionKey(section.key) : () => () => {},
+    () => (section ? getSectionEnabled(section.key) : true),
+    () => true,
+  );
+  const isEnabled = globalEnabled && sectionEnabled;
 
   useEffect(() => {
     const el = ref.current;
