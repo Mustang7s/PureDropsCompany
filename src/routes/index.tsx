@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Phone, MessageCircle, Droplet, ShieldCheck, Truck, Filter, Home, Building2, Store, ArrowRight, Star, Check, Waves } from "lucide-react";
+import { Phone, MessageCircle, Droplet, ShieldCheck, Truck, Filter, Home, Building2, Store, ArrowRight, Star, Check, Waves, Settings2, X } from "lucide-react";
+import { useState } from "react";
 import heroBottle from "@/assets/hero-bottle.jpg";
 import bottle1L from "@/assets/bottle-1l.jpg";
 import bottle5L from "@/assets/bottle-5l.jpg";
 import bottle10L from "@/assets/bottle-10l.jpg";
 import bottle20L from "@/assets/bottle-20l.jpg";
-import { useParallax, useReveal, useParallaxEnabled } from "@/hooks/use-parallax";
+import { useParallax, useReveal, useParallaxEnabled, useParallaxSections, setSectionParallaxEnabled } from "@/hooks/use-parallax";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -30,10 +31,12 @@ const PureLogo = ({ className = "" }: { className?: string }) => (
 
 function Index() {
   const [parallaxOn, setParallaxOn] = useParallaxEnabled();
-  const heroImgRef = useParallax<HTMLDivElement>(0.35);
-  const heroPatternRef = useParallax<HTMLDivElement>(-0.2);
-  const productsBgRef = useParallax<HTMLDivElement>(-0.15);
-  const ctaBgRef = useParallax<HTMLDivElement>(0.25);
+  const [motionPanelOpen, setMotionPanelOpen] = useState(false);
+  const sections = useParallaxSections();
+  const heroImgRef = useParallax<HTMLDivElement>(0.35, { section: { key: "hero", label: "Hero bottle" } });
+  const heroPatternRef = useParallax<HTMLDivElement>(-0.2, { section: { key: "hero", label: "Hero bottle" } });
+  const productsBgRef = useParallax<HTMLDivElement>(-0.15, { section: { key: "products", label: "Products background" } });
+  const ctaBgRef = useParallax<HTMLDivElement>(0.25, { section: { key: "cta", label: "Call-to-action glow" } });
   const servicesRevealRef = useReveal<HTMLDivElement>();
   const productsRevealRef = useReveal<HTMLDivElement>();
   const audienceRevealRef = useReveal<HTMLDivElement>();
@@ -325,7 +328,8 @@ function Index() {
         href={WA_URL}
         target="_blank"
         rel="noopener"
-        className="group fixed bottom-6 right-6 z-[60] flex items-center gap-3 rounded-full bg-accent-green px-6 py-4 font-bold text-white shadow-2xl shadow-accent-green/40 transition-all hover:scale-105 active:scale-95"
+        aria-label="Order via WhatsApp"
+        className="wa-float group fixed bottom-6 right-6 z-[60] flex items-center gap-3 rounded-full bg-accent-green px-6 py-4 font-bold text-white shadow-2xl shadow-accent-green/40 transition-all hover:scale-105 active:scale-95"
       >
         <span className="relative flex size-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
@@ -334,6 +338,70 @@ function Index() {
         <MessageCircle className="size-5" />
         <span className="hidden sm:inline">Order via WhatsApp</span>
       </a>
+
+      {/* Motion settings panel */}
+      <div className="fixed bottom-6 left-6 z-[60]">
+        {motionPanelOpen ? (
+          <div className="w-72 rounded-2xl border border-brand/10 bg-white p-5 shadow-2xl shadow-brand/20">
+            <div className="mb-3 flex items-center justify-between">
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-widest text-accent-green">Motion</div>
+                <div className="text-sm font-bold">Parallax settings</div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMotionPanelOpen(false)}
+                aria-label="Close motion settings"
+                className="grid size-7 place-items-center rounded-full text-brand/50 hover:bg-brand/5 hover:text-brand"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+            <label className="mb-3 flex cursor-pointer items-center justify-between rounded-lg border border-brand/5 bg-surface px-3 py-2 text-sm font-semibold">
+              <span>All parallax</span>
+              <input
+                type="checkbox"
+                className="size-4 accent-accent-green"
+                checked={parallaxOn}
+                onChange={(e) => setParallaxOn(e.target.checked)}
+              />
+            </label>
+            <div className="mb-2 font-mono text-[10px] uppercase tracking-widest text-brand/40">Per section</div>
+            <ul className="space-y-1.5">
+              {sections.length === 0 && (
+                <li className="text-xs text-brand/50">No sections registered yet.</li>
+              )}
+              {sections.map((s) => (
+                <li key={s.key}>
+                  <label className={`flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors ${parallaxOn ? "hover:bg-surface" : "opacity-50"}`}>
+                    <span>{s.label}</span>
+                    <input
+                      type="checkbox"
+                      className="size-4 accent-accent-green"
+                      disabled={!parallaxOn}
+                      checked={s.enabled}
+                      onChange={(e) => setSectionParallaxEnabled(s.key, e.target.checked)}
+                    />
+                  </label>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-[11px] leading-relaxed text-brand/50">
+              Keep subtle motion where it helps and turn it off elsewhere. Honors <span className="font-mono">prefers-reduced-motion</span>.
+            </p>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setMotionPanelOpen(true)}
+            aria-label="Open motion settings"
+            title="Motion settings"
+            className="grid size-12 place-items-center rounded-full border border-brand/10 bg-white text-brand shadow-xl shadow-brand/10 transition-all hover:scale-105 hover:text-accent-green"
+          >
+            <Settings2 className="size-5" />
+          </button>
+        )}
+      </div>
 
       {/* Footer */}
       <footer className="bg-brand px-6 pb-12 pt-24 text-white">
