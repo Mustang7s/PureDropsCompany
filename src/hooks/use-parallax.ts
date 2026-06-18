@@ -18,21 +18,76 @@ function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+/**
+ * Detect low-capability environments where smooth parallax is unlikely to
+ * perform well. Conservative: only returns true when we have a strong signal.
+ * - Save-Data hint enabled by user
+ * - Slow effective network (2g / slow-2g)
+ * - Very low device memory (<= 1 GB)
+ * - Very low CPU core count (<= 2) on a coarse pointer (typical low-end mobile)
+ * - Missing IntersectionObserver / requestAnimationFrame (older browsers)
+ */
+function isLowCapabilityDevice() {
+  if (typeof window === "undefined") return false;
+  // Older browsers: no rAF or no IntersectionObserver → fall back to static.
+  if (
+    typeof window.requestAnimationFrame !== "function" ||
+    typeof window.IntersectionObserver === "undefined"
+  ) {
+    return true;
+  }
+  const nav = navigator as Navigator & {
+    connection?: { saveData?: boolean; effectiveType?: string };
+    deviceMemory?: number;
+    hardwareConcurrency?: number;
+  };
+  const conn = nav.connection;
+  if (conn?.saveData) return true;
+  if (conn?.effectiveType && /^(slow-2g|2g)$/.test(conn.effectiveType)) return true;
+  if (typeof nav.deviceMemory === "number" && nav.deviceMemory > 0 && nav.deviceMemory <= 1) return true;
+  const cores = typeof nav.hardwareConcurrency === "number" ? nav.hardwareConcurrency : 0;
+  const coarse = window.matchMedia?.("(pointer: coarse)").matches ?? false;
+  if (cores && cores <= 2 && coarse) return true;
+  return false;
+}
+
+export function parallaxSupported() {
+  if (typeof window === "undefined") return false;
+  return !isLowCapabilityDevice();
+}
+
 function init() {
   if (initialized || typeof window === "undefined") return;
   initialized = true;
   const stored = window.localStorage.getItem(STORAGE_KEY);
+  const lowCap = isLowCapabilityDevice();
   if (stored === "true" || stored === "false") {
-    enabled = stored === "true";
+    // Respect explicit user choice, but never enable on browsers that
+    // physically can't run the effect (no rAF / no IntersectionObserver).
+    const userWants = stored === "true";
+    enabled =
+      userWants &&
+      typeof window.requestAnimationFrame === "function" &&
+      typeof window.IntersectionObserver !== "undefined";
   } else {
-    enabled = !prefersReducedMotion();
+    enabled = !prefersReducedMotion() && !lowCap;
   }
 
   // Track OS-level changes while the user has no explicit override.
   const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
   mql.addEventListener?.("change", (e) => {
     if (window.localStorage.getItem(STORAGE_KEY) !== null) return;
-    enabled = !e.matches;
+    enabled = !e.matches && !isLowCapabilityDevice();
+    listeners.forEach((l) => l());
+  });
+
+  // React to network/save-data changes (if available) while no override is set.
+  const nav = navigator as Navigator & {
+    connection?: EventTarget & { saveData?: boolean; effectiveType?: string };
+  };
+  nav.connection?.addEventListener?.("change", () => {
+    if (window.localStorage.getItem(STORAGE_KEY) !== null) return;
+    enabled = !prefersReducedMotion() && !isLowCapabilityDevice();
     listeners.forEach((l) => l());
   });
 }
@@ -86,9 +141,42 @@ export function useParallax<T extends HTMLElement>(speed = 0.15) {
       return;
     }
 
+    // Guard for legacy browsers — degrade to a static element.
+    if (
+      typeof window.requestAnimationFrame !== "function" ||
+      typeof window.IntersectionObserver === "undefined"
+    ) {
+      el.style.transform = "";
+      return;
+    }
+
+    // Only run the rAF loop while the element is actually in the viewport.
+    // This avoids burning CPU on off-screen sections — a meaningful win on
+    // low-end devices with many parallax targets.
+    let inView = false;
     let frame = 0;
+    let lastFrameAt = 0;
+    let slowFrames = 0;
+    let disabledForPerf = false;
+    // Cap updates to ~30fps on devices that show signs of jank.
+    const MIN_FRAME_MS = 1000 / 30;
+
     const update = () => {
       frame = 0;
+      const now = performance.now();
+      // If a frame took >50ms, count it as slow. 5 slow frames in a row →
+      // give up and leave the element static for the rest of the session.
+      if (lastFrameAt && now - lastFrameAt > 50) {
+        slowFrames += 1;
+        if (slowFrames >= 5) {
+          disabledForPerf = true;
+          el.style.transform = "";
+          return;
+        }
+      } else {
+        slowFrames = 0;
+      }
+      lastFrameAt = now;
       const rect = el.getBoundingClientRect();
       const vh = window.innerHeight || 1;
       // distance from the viewport center, normalized roughly to [-1, 1]
@@ -96,17 +184,33 @@ export function useParallax<T extends HTMLElement>(speed = 0.15) {
       const offset = -progress * speed * 100;
       el.style.transform = `translate3d(0, ${offset.toFixed(2)}px, 0)`;
     };
+    let throttleAt = 0;
     const onScroll = () => {
-      if (frame) return;
+      if (frame || !inView || disabledForPerf) return;
+      const now = performance.now();
+      if (now - throttleAt < MIN_FRAME_MS) return;
+      throttleAt = now;
       frame = requestAnimationFrame(update);
     };
-    update();
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          inView = entry.isIntersecting;
+        }
+        if (inView && !disabledForPerf) update();
+      },
+      { rootMargin: "20% 0px 20% 0px" },
+    );
+    io.observe(el);
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onScroll, { passive: true });
     return () => {
+      io.disconnect();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (frame) cancelAnimationFrame(frame);
+      el.style.transform = "";
     };
   }, [speed, isEnabled]);
 
@@ -126,7 +230,8 @@ export function useReveal<T extends HTMLElement>() {
     if (!el) return;
     if (typeof window === "undefined") return;
 
-    if (!isEnabled) {
+    // No IntersectionObserver (very old browsers) → just reveal immediately.
+    if (!isEnabled || typeof window.IntersectionObserver === "undefined") {
       el.classList.add("is-revealed");
       return;
     }
