@@ -171,6 +171,18 @@
   transform: translateY(0);
 }
 
+/* Floating WhatsApp button bob */
+@keyframes wa-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.wa-float {
+  animation: wa-float 3s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wa-float { animation: none; }
+}
+
 /* Older browsers without IntersectionObserver never get `is-revealed`
    added by JS — make sure the content is still visible for them. */
 @supports not (selector(:has(*))) {
