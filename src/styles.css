@@ -171,12 +171,39 @@
   transform: translateY(0);
 }
 
-@media (prefers-reduced-motion: reduce) {
+/* Older browsers without IntersectionObserver never get `is-revealed`
+   added by JS — make sure the content is still visible for them. */
+@supports not (selector(:has(*))) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Save-Data hint: user explicitly asked the browser to conserve resources. */
+@media (prefers-reduced-data: reduce) {
   .parallax {
     transform: none !important;
+    will-change: auto;
+    transition: none;
   }
   .reveal {
     opacity: 1;
     transform: none;
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parallax {
+    transform: none !important;
+    will-change: auto;
+    transition: none;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
