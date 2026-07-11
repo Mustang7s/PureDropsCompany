@@ -237,6 +237,67 @@
   .wa-pulse-ring { animation: none; }
 }
 
+/* Cinematic "video" backdrop — slow zoom-out Ken Burns on an image layer */
+@keyframes ken-burns-out {
+  0%   { transform: scale(1.35) translate3d(0, 0, 0); }
+  100% { transform: scale(1.0)  translate3d(0, 0, 0); }
+}
+.ken-burns {
+  animation: ken-burns-out 22s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: center center;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ken-burns { animation: none; transform: none; }
+}
+
+/* Page-flip reveal — pairs with `.reveal` (useReveal toggles `.is-revealed`).
+   Adds a subtle 3D flip so each section feels like a new page turning in. */
+.flip {
+  perspective: 1400px;
+}
+.flip.reveal {
+  transform: perspective(1400px) rotateX(10deg) translateY(48px);
+  opacity: 0;
+  transform-origin: 50% 100%;
+  transition:
+    opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.flip.reveal.is-revealed {
+  transform: perspective(1400px) rotateX(0deg) translateY(0);
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .flip.reveal,
+  .flip.reveal.is-revealed {
+    transform: none;
+    opacity: 1;
+    transition: none;
+  }
+}
+
+/* Interactive coverage map */
+.cov-zone {
+  cursor: pointer;
+  transition: fill-opacity 0.3s ease, stroke-width 0.3s ease, filter 0.3s ease;
+}
+.cov-zone:hover { fill-opacity: 0.55; }
+.cov-zone.is-active {
+  fill-opacity: 0.7;
+  filter: drop-shadow(0 0 10px oklch(0.72 0.16 152 / 0.5));
+}
+.cov-route {
+  stroke-dasharray: 6 6;
+  animation: cov-dash 1.2s linear infinite;
+}
+@keyframes cov-dash {
+  to { stroke-dashoffset: -24; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cov-route { animation: none; }
+}
+
 /* Glass nav */
 .glass-nav {
   background: color-mix(in oklab, white 60%, transparent);
