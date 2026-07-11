@@ -264,7 +264,7 @@ function Index() {
       </section>
 
       {/* Services */}
-      <section id="services" ref={servicesRevealRef} className="reveal mx-auto max-w-7xl px-6 py-24">
+      <section id="services" ref={servicesRevealRef} className="flip reveal mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
             <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">What we do</h2>
@@ -288,7 +288,7 @@ function Index() {
       </section>
 
       {/* Stats counters */}
-      <section ref={statsRevealRef} className="reveal relative overflow-hidden bg-brand px-6 py-24 text-white">
+      <section ref={statsRevealRef} className="flip reveal relative overflow-hidden bg-brand px-6 py-24 text-white">
         <div className="pointer-events-none absolute -left-32 -top-32 size-[28rem] rounded-full bg-accent-green/20 blur-3xl" aria-hidden="true" />
         <div className="relative mx-auto grid max-w-7xl gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {[
@@ -314,7 +314,7 @@ function Index() {
           ref={productsBgRef}
           className="parallax pointer-events-none absolute -right-32 -top-32 size-[28rem] rounded-full bg-brand/5 blur-3xl"
         />
-        <div ref={productsRevealRef} className="reveal relative mx-auto max-w-7xl">
+        <div ref={productsRevealRef} className="flip reveal relative mx-auto max-w-7xl">
           <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
               <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">The Collection</h2>
@@ -363,7 +363,7 @@ function Index() {
       </section>
 
       {/* Trust / Certifications */}
-      <section id="trust" ref={trustRevealRef} className="reveal mx-auto max-w-7xl px-6 py-24">
+      <section id="trust" ref={trustRevealRef} className="flip reveal mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 max-w-2xl">
           <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">Trust & Certification</h2>
           <p className="text-4xl font-bold tracking-tight">Verified quality, from source to seal.</p>
@@ -386,62 +386,10 @@ function Index() {
       </section>
 
       {/* Delivery coverage map */}
-      <section id="coverage" ref={coverageRevealRef} className="reveal relative overflow-hidden bg-surface px-6 py-24">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1.4fr] lg:items-center">
-          <div>
-            <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">Delivery Coverage</h2>
-            <p className="mb-6 text-4xl font-bold tracking-tight">Reaching every corner.</p>
-            <p className="mb-8 text-brand/60">Same-day refills across Nairobi and the metropolitan area, with next-day service to surrounding counties.</p>
-            <ul className="grid grid-cols-2 gap-3 text-sm">
-              {["Nairobi CBD","Westlands","Karen","Kilimani","Kiambu","Thika","Ruaka","Rongai"].map((z) => (
-                <li key={z} className="flex items-center gap-2 rounded-lg border border-brand/5 bg-white px-3 py-2">
-                  <MapPin className="size-4 text-accent-green" /> {z}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-brand/10 bg-white shadow-xl shadow-brand/10">
-            <svg viewBox="0 0 400 300" className="absolute inset-0 h-full w-full">
-              <defs>
-                <radialGradient id="cov" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="oklch(0.72 0.16 152)" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="oklch(0.72 0.16 152)" stopOpacity="0" />
-                </radialGradient>
-              </defs>
-              <rect width="400" height="300" fill="oklch(0.985 0.005 250)" />
-              {/* fake roads */}
-              <path d="M0,180 C120,120 260,240 400,150" stroke="oklch(0.32 0.14 264)" strokeOpacity="0.15" strokeWidth="2" fill="none" />
-              <path d="M60,0 C120,120 220,180 300,300" stroke="oklch(0.32 0.14 264)" strokeOpacity="0.15" strokeWidth="2" fill="none" />
-              <path d="M0,60 L400,60" stroke="oklch(0.32 0.14 264)" strokeOpacity="0.08" strokeWidth="1" fill="none" />
-              <path d="M0,220 L400,220" stroke="oklch(0.32 0.14 264)" strokeOpacity="0.08" strokeWidth="1" fill="none" />
-              {/* coverage blobs */}
-              <circle cx="200" cy="150" r="120" fill="url(#cov)" />
-              <circle cx="120" cy="100" r="60" fill="url(#cov)" />
-              <circle cx="290" cy="200" r="70" fill="url(#cov)" />
-              {/* pins */}
-              {[
-                { x: 200, y: 150, label: "HQ" },
-                { x: 130, y: 110, label: "Westlands" },
-                { x: 260, y: 180, label: "Karen" },
-                { x: 320, y: 90, label: "Kiambu" },
-                { x: 110, y: 220, label: "Rongai" },
-              ].map((p) => (
-                <g key={p.label}>
-                  <circle cx={p.x} cy={p.y} r="8" fill="oklch(0.72 0.16 152)" opacity="0.35">
-                    <animate attributeName="r" values="8;16;8" dur="2.4s" repeatCount="indefinite" />
-                    <animate attributeName="opacity" values="0.4;0;0.4" dur="2.4s" repeatCount="indefinite" />
-                  </circle>
-                  <circle cx={p.x} cy={p.y} r="5" fill="oklch(0.32 0.14 264)" />
-                  <text x={p.x + 10} y={p.y + 4} fontSize="10" fontFamily="monospace" fill="oklch(0.32 0.14 264)">{p.label}</text>
-                </g>
-              ))}
-            </svg>
-          </div>
-        </div>
-      </section>
+      <CoverageSection sectionRef={coverageRevealRef} />
 
       {/* Audience */}
-      <section id="audience" ref={audienceRevealRef} className="reveal mx-auto max-w-7xl px-6 py-24">
+      <section id="audience" ref={audienceRevealRef} className="flip reveal mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 max-w-2xl">
           <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">Who we serve</h2>
           <p className="text-4xl font-bold tracking-tight">Hydrating Homes, Offices & Shops.</p>
@@ -463,7 +411,7 @@ function Index() {
 
       {/* Testimonials */}
       <section id="reviews" className="bg-surface px-6 py-24">
-        <div ref={reviewsRevealRef} className="reveal mx-auto grid max-w-7xl gap-12 lg:grid-cols-3">
+        <div ref={reviewsRevealRef} className="flip reveal mx-auto grid max-w-7xl gap-12 lg:grid-cols-3">
           <div className="lg:col-span-1">
             <h2 className="mb-6 text-4xl font-bold tracking-tight">Trusted by families & businesses.</h2>
             <p className="mb-8 text-brand/60">Join 2,000+ happy customers in Kenya who prioritize their health with Pure Drops.</p>
