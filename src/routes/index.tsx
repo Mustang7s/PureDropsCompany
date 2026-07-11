@@ -164,8 +164,16 @@ function Index() {
 
       {/* Cinematic Hero */}
       <section id="top" className="relative isolate min-h-[92vh] overflow-hidden">
+        {/* Cinematic zoom-out backdrop — "video-like" Ken Burns on a hero image */}
+        <div className="absolute inset-0 -z-30 overflow-hidden" aria-hidden="true">
+          <div
+            className="ken-burns absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${heroBottle})`, filter: "blur(2px) brightness(0.55) saturate(1.1)" }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-brand/70 via-brand/50 to-black/60" />
+        </div>
         {/* Animated aqua background layer (cinematic, video-like) */}
-        <div className="hero-cinematic absolute inset-0 -z-20" aria-hidden="true" />
+        <div className="hero-cinematic absolute inset-0 -z-20 opacity-70" aria-hidden="true" />
         <div className="hero-shimmer pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
         {/* Subtle silver grid */}
         <div
