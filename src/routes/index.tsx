@@ -16,6 +16,45 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Clean, safe & refreshing purified water with free doorstep delivery across Kenya. Order via WhatsApp or call 0141 409 800." },
       { property: "og:title", content: "Pure Drops Water Station" },
       { property: "og:description", content: "Clinical-grade purified water delivered to homes, offices and shops." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "/" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "keywords", content: "purified water Kenya, water delivery Nairobi, water refill, Embakasi water delivery, Westlands water, 20L bottled water, drinking water station, KEBS certified water" },
+      { name: "robots", content: "index, follow" },
+      { name: "author", content: "Pure Drops Water Station" },
+      { name: "geo.region", content: "KE" },
+      { name: "geo.placename", content: "Nairobi" },
+    ],
+    links: [{ rel: "canonical", href: "/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          name: "Pure Drops Water Station",
+          image: "/favicon.ico",
+          telephone: "+254141409800",
+          priceRange: "KES 50 – KES 500",
+          description:
+            "Advanced multi-stage filtration and free doorstep delivery of purified drinking water across Nairobi and Kenya.",
+          address: {
+            "@type": "PostalAddress",
+            addressCountry: "KE",
+            addressRegion: "Nairobi",
+          },
+          areaServed: [
+            "Nairobi CBD", "Westlands", "Karen", "Kilimani", "Embakasi",
+            "Kiambu", "Thika", "Ruaka", "Rongai",
+          ],
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: "4.9",
+            reviewCount: "2400",
+          },
+          openingHours: "Mo-Su 07:00-21:00",
+        }),
+      },
     ],
   }),
   component: Index,
@@ -125,8 +164,16 @@ function Index() {
 
       {/* Cinematic Hero */}
       <section id="top" className="relative isolate min-h-[92vh] overflow-hidden">
+        {/* Cinematic zoom-out backdrop — "video-like" Ken Burns on a hero image */}
+        <div className="absolute inset-0 -z-30 overflow-hidden" aria-hidden="true">
+          <div
+            className="ken-burns absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${heroBottle})`, filter: "blur(2px) brightness(0.55) saturate(1.1)" }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-brand/70 via-brand/50 to-black/60" />
+        </div>
         {/* Animated aqua background layer (cinematic, video-like) */}
-        <div className="hero-cinematic absolute inset-0 -z-20" aria-hidden="true" />
+        <div className="hero-cinematic absolute inset-0 -z-20 opacity-70" aria-hidden="true" />
         <div className="hero-shimmer pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
         {/* Subtle silver grid */}
         <div
@@ -217,7 +264,7 @@ function Index() {
       </section>
 
       {/* Services */}
-      <section id="services" ref={servicesRevealRef} className="reveal mx-auto max-w-7xl px-6 py-24">
+      <section id="services" ref={servicesRevealRef} className="flip reveal mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
             <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">What we do</h2>
@@ -241,7 +288,7 @@ function Index() {
       </section>
 
       {/* Stats counters */}
-      <section ref={statsRevealRef} className="reveal relative overflow-hidden bg-brand px-6 py-24 text-white">
+      <section ref={statsRevealRef} className="flip reveal relative overflow-hidden bg-brand px-6 py-24 text-white">
         <div className="pointer-events-none absolute -left-32 -top-32 size-[28rem] rounded-full bg-accent-green/20 blur-3xl" aria-hidden="true" />
         <div className="relative mx-auto grid max-w-7xl gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {[
@@ -267,7 +314,7 @@ function Index() {
           ref={productsBgRef}
           className="parallax pointer-events-none absolute -right-32 -top-32 size-[28rem] rounded-full bg-brand/5 blur-3xl"
         />
-        <div ref={productsRevealRef} className="reveal relative mx-auto max-w-7xl">
+        <div ref={productsRevealRef} className="flip reveal relative mx-auto max-w-7xl">
           <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
               <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">The Collection</h2>
@@ -316,7 +363,7 @@ function Index() {
       </section>
 
       {/* Trust / Certifications */}
-      <section id="trust" ref={trustRevealRef} className="reveal mx-auto max-w-7xl px-6 py-24">
+      <section id="trust" ref={trustRevealRef} className="flip reveal mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 max-w-2xl">
           <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">Trust & Certification</h2>
           <p className="text-4xl font-bold tracking-tight">Verified quality, from source to seal.</p>
@@ -339,62 +386,10 @@ function Index() {
       </section>
 
       {/* Delivery coverage map */}
-      <section id="coverage" ref={coverageRevealRef} className="reveal relative overflow-hidden bg-surface px-6 py-24">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1.4fr] lg:items-center">
-          <div>
-            <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">Delivery Coverage</h2>
-            <p className="mb-6 text-4xl font-bold tracking-tight">Reaching every corner.</p>
-            <p className="mb-8 text-brand/60">Same-day refills across Nairobi and the metropolitan area, with next-day service to surrounding counties.</p>
-            <ul className="grid grid-cols-2 gap-3 text-sm">
-              {["Nairobi CBD","Westlands","Karen","Kilimani","Kiambu","Thika","Ruaka","Rongai"].map((z) => (
-                <li key={z} className="flex items-center gap-2 rounded-lg border border-brand/5 bg-white px-3 py-2">
-                  <MapPin className="size-4 text-accent-green" /> {z}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-brand/10 bg-white shadow-xl shadow-brand/10">
-            <svg viewBox="0 0 400 300" className="absolute inset-0 h-full w-full">
-              <defs>
-                <radialGradient id="cov" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="oklch(0.72 0.16 152)" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="oklch(0.72 0.16 152)" stopOpacity="0" />
-                </radialGradient>
-              </defs>
-              <rect width="400" height="300" fill="oklch(0.985 0.005 250)" />
-              {/* fake roads */}
-              <path d="M0,180 C120,120 260,240 400,150" stroke="oklch(0.32 0.14 264)" strokeOpacity="0.15" strokeWidth="2" fill="none" />
-              <path d="M60,0 C120,120 220,180 300,300" stroke="oklch(0.32 0.14 264)" strokeOpacity="0.15" strokeWidth="2" fill="none" />
-              <path d="M0,60 L400,60" stroke="oklch(0.32 0.14 264)" strokeOpacity="0.08" strokeWidth="1" fill="none" />
-              <path d="M0,220 L400,220" stroke="oklch(0.32 0.14 264)" strokeOpacity="0.08" strokeWidth="1" fill="none" />
-              {/* coverage blobs */}
-              <circle cx="200" cy="150" r="120" fill="url(#cov)" />
-              <circle cx="120" cy="100" r="60" fill="url(#cov)" />
-              <circle cx="290" cy="200" r="70" fill="url(#cov)" />
-              {/* pins */}
-              {[
-                { x: 200, y: 150, label: "HQ" },
-                { x: 130, y: 110, label: "Westlands" },
-                { x: 260, y: 180, label: "Karen" },
-                { x: 320, y: 90, label: "Kiambu" },
-                { x: 110, y: 220, label: "Rongai" },
-              ].map((p) => (
-                <g key={p.label}>
-                  <circle cx={p.x} cy={p.y} r="8" fill="oklch(0.72 0.16 152)" opacity="0.35">
-                    <animate attributeName="r" values="8;16;8" dur="2.4s" repeatCount="indefinite" />
-                    <animate attributeName="opacity" values="0.4;0;0.4" dur="2.4s" repeatCount="indefinite" />
-                  </circle>
-                  <circle cx={p.x} cy={p.y} r="5" fill="oklch(0.32 0.14 264)" />
-                  <text x={p.x + 10} y={p.y + 4} fontSize="10" fontFamily="monospace" fill="oklch(0.32 0.14 264)">{p.label}</text>
-                </g>
-              ))}
-            </svg>
-          </div>
-        </div>
-      </section>
+      <CoverageSection sectionRef={coverageRevealRef} />
 
       {/* Audience */}
-      <section id="audience" ref={audienceRevealRef} className="reveal mx-auto max-w-7xl px-6 py-24">
+      <section id="audience" ref={audienceRevealRef} className="flip reveal mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 max-w-2xl">
           <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">Who we serve</h2>
           <p className="text-4xl font-bold tracking-tight">Hydrating Homes, Offices & Shops.</p>
@@ -416,7 +411,7 @@ function Index() {
 
       {/* Testimonials */}
       <section id="reviews" className="bg-surface px-6 py-24">
-        <div ref={reviewsRevealRef} className="reveal mx-auto grid max-w-7xl gap-12 lg:grid-cols-3">
+        <div ref={reviewsRevealRef} className="flip reveal mx-auto grid max-w-7xl gap-12 lg:grid-cols-3">
           <div className="lg:col-span-1">
             <h2 className="mb-6 text-4xl font-bold tracking-tight">Trusted by families & businesses.</h2>
             <p className="mb-8 text-brand/60">Join 2,000+ happy customers in Kenya who prioritize their health with Pure Drops.</p>
@@ -628,5 +623,210 @@ function Index() {
         </div>
       </footer>
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Interactive Delivery Coverage Map
+// ---------------------------------------------------------------------------
+
+type CovZone = {
+  key: string;
+  name: string;
+  eta: string;
+  fee: string;
+  slot: string;
+  x: number;
+  y: number;
+  /** SVG polygon approximating the service area. */
+  poly: string;
+};
+
+const HQ = { x: 200, y: 150 };
+
+const ZONES: CovZone[] = [
+  { key: "cbd",       name: "Nairobi CBD", eta: "45–60 min", fee: "Free", slot: "Same-day",
+    x: 205, y: 155, poly: "180,140 225,138 235,165 195,175 175,160" },
+  { key: "westlands", name: "Westlands",   eta: "40–55 min", fee: "Free", slot: "Same-day",
+    x: 138, y: 108, poly: "115,90 165,88 172,120 130,130 108,115" },
+  { key: "kilimani",  name: "Kilimani",    eta: "50–70 min", fee: "Free", slot: "Same-day",
+    x: 175, y: 200, poly: "150,185 200,183 210,215 165,225 145,210" },
+  { key: "karen",     name: "Karen",       eta: "60–80 min", fee: "Free", slot: "Same-day",
+    x: 258, y: 210, poly: "230,190 285,188 295,225 250,235 225,215" },
+  { key: "embakasi",  name: "Embakasi",    eta: "55–75 min", fee: "Free", slot: "Same-day",
+    x: 320, y: 175, poly: "295,155 355,153 365,190 315,200 290,180" },
+  { key: "kiambu",    name: "Kiambu",      eta: "70–90 min", fee: "KES 100", slot: "Same/Next-day",
+    x: 315, y: 78,  poly: "285,55 350,55 360,95 320,105 285,90" },
+  { key: "ruaka",     name: "Ruaka",       eta: "50–70 min", fee: "Free", slot: "Same-day",
+    x: 90,  y: 65,  poly: "60,45 120,45 130,85 90,95 60,80" },
+  { key: "rongai",    name: "Rongai",      eta: "75–95 min", fee: "KES 100", slot: "Same/Next-day",
+    x: 100, y: 240, poly: "70,220 135,220 140,260 90,270 65,250" },
+  { key: "thika",     name: "Thika",       eta: "Next-day",  fee: "KES 200", slot: "Next-day",
+    x: 365, y: 45,  poly: "340,25 395,25 395,70 355,75 335,55" },
+];
+
+function CoverageSection({ sectionRef }: { sectionRef: React.Ref<HTMLElement> }) {
+  const [active, setActive] = useState<string>("embakasi");
+  const zone = ZONES.find((z) => z.key === active) ?? ZONES[0];
+
+  return (
+    <section
+      id="coverage"
+      ref={sectionRef}
+      className="flip reveal relative overflow-hidden bg-surface px-6 py-24"
+    >
+      <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1.4fr] lg:items-center">
+        <div>
+          <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">
+            Delivery Coverage
+          </h2>
+          <p className="mb-6 text-4xl font-bold tracking-tight">Pick your area.</p>
+          <p className="mb-8 text-brand/60">
+            Tap any zone to highlight the delivery route from our HQ and see your live ETA, slot & fee.
+          </p>
+
+          {/* Selected zone card */}
+          <div className="mb-6 rounded-2xl border border-accent-green/30 bg-white p-6 shadow-lg shadow-accent-green/5">
+            <div className="mb-1 font-mono text-[10px] uppercase tracking-widest text-accent-green">
+              Selected area
+            </div>
+            <div className="mb-4 flex items-center gap-2 text-2xl font-bold">
+              <MapPin className="size-5 text-accent-green" /> {zone.name}
+            </div>
+            <dl className="grid grid-cols-3 gap-3 text-sm">
+              <div>
+                <dt className="text-[10px] uppercase tracking-widest text-brand/40">ETA</dt>
+                <dd className="font-bold">{zone.eta}</dd>
+              </div>
+              <div>
+                <dt className="text-[10px] uppercase tracking-widest text-brand/40">Slot</dt>
+                <dd className="font-bold">{zone.slot}</dd>
+              </div>
+              <div>
+                <dt className="text-[10px] uppercase tracking-widest text-brand/40">Fee</dt>
+                <dd className="font-bold text-accent-green">{zone.fee}</dd>
+              </div>
+            </dl>
+            <a
+              href={`${WA_URL.split("?")[0]}?text=${encodeURIComponent(
+                `Hi Pure Drops, I'd like a delivery to ${zone.name}.`,
+              )}`}
+              target="_blank"
+              rel="noopener"
+              className="mt-5 inline-flex items-center gap-2 rounded-xl bg-accent-green px-5 py-3 text-sm font-bold text-white transition-transform hover:scale-105"
+            >
+              <MessageCircle className="size-4" /> Order to {zone.name}
+            </a>
+          </div>
+
+          <ul className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-3">
+            {ZONES.map((z) => (
+              <li key={z.key}>
+                <button
+                  type="button"
+                  onClick={() => setActive(z.key)}
+                  className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left transition-all ${
+                    active === z.key
+                      ? "border-accent-green bg-accent-green/10 font-semibold text-brand"
+                      : "border-brand/5 bg-white hover:border-accent-green/40"
+                  }`}
+                >
+                  <MapPin className="size-3.5 text-accent-green" /> {z.name}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-brand/10 bg-white shadow-xl shadow-brand/10">
+          <svg viewBox="0 0 400 300" className="absolute inset-0 h-full w-full" role="img" aria-label="Interactive Nairobi delivery coverage map">
+            <defs>
+              <radialGradient id="cov" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="oklch(0.72 0.16 152)" stopOpacity="0.35" />
+                <stop offset="100%" stopColor="oklch(0.72 0.16 152)" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+            <rect width="400" height="300" fill="oklch(0.985 0.005 250)" />
+            {/* roads */}
+            <path d="M0,180 C120,120 260,240 400,150" stroke="oklch(0.32 0.14 264)" strokeOpacity="0.15" strokeWidth="2" fill="none" />
+            <path d="M60,0 C120,120 220,180 300,300" stroke="oklch(0.32 0.14 264)" strokeOpacity="0.15" strokeWidth="2" fill="none" />
+            <path d="M0,60 L400,60" stroke="oklch(0.32 0.14 264)" strokeOpacity="0.08" strokeWidth="1" />
+            <path d="M0,220 L400,220" stroke="oklch(0.32 0.14 264)" strokeOpacity="0.08" strokeWidth="1" />
+            {/* HQ coverage halo */}
+            <circle cx={HQ.x} cy={HQ.y} r="140" fill="url(#cov)" />
+
+            {/* Zone polygons — clickable */}
+            {ZONES.map((z) => (
+              <polygon
+                key={z.key}
+                points={z.poly}
+                fill="oklch(0.72 0.16 152)"
+                fillOpacity={active === z.key ? 0.7 : 0.22}
+                stroke="oklch(0.32 0.14 264)"
+                strokeOpacity={active === z.key ? 0.9 : 0.35}
+                strokeWidth={active === z.key ? 2 : 1}
+                className={`cov-zone ${active === z.key ? "is-active" : ""}`}
+                onClick={() => setActive(z.key)}
+              >
+                <title>{`${z.name} — ${z.eta}`}</title>
+              </polygon>
+            ))}
+
+            {/* Route from HQ to selected zone */}
+            <line
+              x1={HQ.x}
+              y1={HQ.y}
+              x2={zone.x}
+              y2={zone.y}
+              stroke="oklch(0.72 0.16 152)"
+              strokeWidth="2.5"
+              className="cov-route"
+            />
+
+            {/* Zone pins */}
+            {ZONES.map((z) => (
+              <g key={`pin-${z.key}`} onClick={() => setActive(z.key)} style={{ cursor: "pointer" }}>
+                {active === z.key && (
+                  <circle cx={z.x} cy={z.y} r="10" fill="oklch(0.72 0.16 152)" opacity="0.4">
+                    <animate attributeName="r" values="10;18;10" dur="1.8s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.5;0;0.5" dur="1.8s" repeatCount="indefinite" />
+                  </circle>
+                )}
+                <circle
+                  cx={z.x}
+                  cy={z.y}
+                  r={active === z.key ? 6 : 4}
+                  fill={active === z.key ? "oklch(0.72 0.16 152)" : "oklch(0.32 0.14 264)"}
+                  stroke="white"
+                  strokeWidth="1.5"
+                />
+                <text
+                  x={z.x + 9}
+                  y={z.y + 3}
+                  fontSize="9"
+                  fontFamily="monospace"
+                  fill="oklch(0.32 0.14 264)"
+                  opacity={active === z.key ? 1 : 0.65}
+                >
+                  {z.name}
+                </text>
+              </g>
+            ))}
+
+            {/* HQ marker */}
+            <g>
+              <circle cx={HQ.x} cy={HQ.y} r="7" fill="oklch(0.32 0.14 264)" stroke="white" strokeWidth="2" />
+              <text x={HQ.x + 10} y={HQ.y - 8} fontSize="10" fontFamily="monospace" fontWeight="bold" fill="oklch(0.32 0.14 264)">
+                HQ
+              </text>
+            </g>
+          </svg>
+
+          <div className="pointer-events-none absolute bottom-3 left-3 rounded-lg bg-white/90 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-brand/60 backdrop-blur">
+            Click zones to see routes
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
