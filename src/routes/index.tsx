@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Phone, MessageCircle, Droplet, ShieldCheck, Truck, Filter, Home, Building2, Store, ArrowRight, Star, Check, Waves, Settings2, X, Award, FlaskConical, Leaf, MapPin } from "lucide-react";
+import { Phone, MessageCircle, Droplet, ShieldCheck, Truck, Filter, Home, Building2, Store, ArrowRight, Star, Check, Waves, Settings2, X, Award, FlaskConical, Leaf, MapPin, Accessibility } from "lucide-react";
 import { useEffect, useState } from "react";
 import heroBottle from "@/assets/hero-bottle.jpg";
 import bottle1L from "@/assets/bottle-1l.jpg";
@@ -144,15 +144,12 @@ function Index() {
             type="button"
             onClick={() => setParallaxOn(!parallaxOn)}
             aria-pressed={parallaxOn}
-            title={parallaxOn ? "Disable parallax animations" : "Enable parallax animations"}
-            className={`hidden size-9 place-items-center rounded-full border transition-colors sm:grid ${
-              parallaxOn
-                ? "border-accent-green/30 bg-accent-green/10 text-accent-green"
-                : "border-brand/10 text-brand/50 hover:text-brand"
-            }`}
+            aria-label="Accessibility: toggle motion and animations"
+            title="Accessibility — toggle motion & animations"
+            className="grid size-10 place-items-center rounded-full bg-[#1a56db] text-white shadow-lg shadow-[#1a56db]/30 ring-2 ring-white/70 transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#1a56db]/40"
           >
-            <Waves className="size-4" aria-hidden="true" />
-            <span className="sr-only">{parallaxOn ? "Disable" : "Enable"} parallax animations</span>
+            <Accessibility className="size-5" strokeWidth={2.25} aria-hidden="true" />
+            <span className="sr-only">Accessibility settings — {parallaxOn ? "reduce motion" : "enable motion"}</span>
           </button>
           <a href={`tel:${PHONE.replace(/\s/g, "")}`} className="hidden font-mono text-xs font-medium opacity-70 hover:text-accent-green sm:block">
             {PHONE}
