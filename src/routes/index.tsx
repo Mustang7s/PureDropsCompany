@@ -669,29 +669,67 @@ function CoverageSection({ sectionRef }: { sectionRef: React.Ref<HTMLElement> })
   const [active, setActive] = useState<string>("embakasi");
   const zone = ZONES.find((z) => z.key === active) ?? ZONES[0];
 
+  const activeIndex = ZONES.findIndex((z) => z.key === active);
+  const selectZoneByIndex = (i: number) => {
+    const next = (i + ZONES.length) % ZONES.length;
+    setActive(ZONES[next].key);
+  };
+  const onZoneKeyDown = (e: React.KeyboardEvent) => {
+    switch (e.key) {
+      case "ArrowRight":
+      case "ArrowDown":
+        e.preventDefault();
+        selectZoneByIndex(activeIndex + 1);
+        break;
+      case "ArrowLeft":
+      case "ArrowUp":
+        e.preventDefault();
+        selectZoneByIndex(activeIndex - 1);
+        break;
+      case "Home":
+        e.preventDefault();
+        selectZoneByIndex(0);
+        break;
+      case "End":
+        e.preventDefault();
+        selectZoneByIndex(ZONES.length - 1);
+        break;
+    }
+  };
+
   return (
     <section
       id="coverage"
       ref={sectionRef}
       className="flip reveal relative overflow-hidden bg-surface px-6 py-24"
+      aria-labelledby="coverage-heading"
     >
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1.4fr] lg:items-center">
         <div>
-          <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">
+          <h2 id="coverage-heading" className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">
             Delivery Coverage
           </h2>
           <p className="mb-6 text-4xl font-bold tracking-tight">Pick your area.</p>
           <p className="mb-8 text-brand/60">
-            Tap any zone to highlight the delivery route from our HQ and see your live ETA, slot & fee.
+            Tap or use arrow keys on any zone to highlight the delivery route from our HQ and see your live ETA, slot & fee.
           </p>
 
           {/* Selected zone card */}
-          <div className="mb-6 rounded-2xl border border-accent-green/30 bg-white p-6 shadow-lg shadow-accent-green/5">
+          <div
+            className="mb-6 rounded-2xl border border-accent-green/30 bg-white p-6 shadow-lg shadow-accent-green/5"
+            role="region"
+            aria-live="polite"
+            aria-atomic="true"
+            aria-label={`Selected delivery area: ${zone.name}. ETA ${zone.eta}. Slot ${zone.slot}. Fee ${zone.fee}.`}
+          >
+            <p className="sr-only">
+              Selected delivery area {zone.name}. Estimated arrival {zone.eta}. Delivery slot {zone.slot}. Fee {zone.fee}.
+            </p>
             <div className="mb-1 font-mono text-[10px] uppercase tracking-widest text-accent-green">
               Selected area
             </div>
             <div className="mb-4 flex items-center gap-2 text-2xl font-bold">
-              <MapPin className="size-5 text-accent-green" /> {zone.name}
+              <MapPin className="size-5 text-accent-green" aria-hidden="true" /> {zone.name}
             </div>
             <dl className="grid grid-cols-3 gap-3 text-sm">
               <div>
@@ -713,17 +751,27 @@ function CoverageSection({ sectionRef }: { sectionRef: React.Ref<HTMLElement> })
               )}`}
               target="_blank"
               rel="noopener"
+              aria-label={`Order water to ${zone.name} via WhatsApp`}
               className="mt-5 inline-flex items-center gap-2 rounded-xl bg-accent-green px-5 py-3 text-sm font-bold text-white transition-transform hover:scale-105"
             >
-              <MessageCircle className="size-4" /> Order to {zone.name}
+              <MessageCircle className="size-4" aria-hidden="true" /> Order to {zone.name}
             </a>
           </div>
 
-          <ul className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-3">
+          <ul
+            className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-3"
+            role="radiogroup"
+            aria-label="Delivery service areas"
+            onKeyDown={onZoneKeyDown}
+          >
             {ZONES.map((z) => (
               <li key={z.key}>
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={active === z.key}
+                  tabIndex={active === z.key ? 0 : -1}
+                  aria-label={`${z.name}. ETA ${z.eta}. ${z.slot}. Fee ${z.fee}.`}
                   onClick={() => setActive(z.key)}
                   className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left transition-all ${
                     active === z.key
@@ -731,7 +779,7 @@ function CoverageSection({ sectionRef }: { sectionRef: React.Ref<HTMLElement> })
                       : "border-brand/5 bg-white hover:border-accent-green/40"
                   }`}
                 >
-                  <MapPin className="size-3.5 text-accent-green" /> {z.name}
+                  <MapPin className="size-3.5 text-accent-green" aria-hidden="true" /> {z.name}
                 </button>
               </li>
             ))}
@@ -739,7 +787,12 @@ function CoverageSection({ sectionRef }: { sectionRef: React.Ref<HTMLElement> })
         </div>
 
         <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-brand/10 bg-white shadow-xl shadow-brand/10">
-          <svg viewBox="0 0 400 300" className="absolute inset-0 h-full w-full" role="img" aria-label="Interactive Nairobi delivery coverage map">
+          <svg
+            viewBox="0 0 400 300"
+            className="absolute inset-0 h-full w-full"
+            role="img"
+            aria-label={`Interactive Nairobi delivery coverage map. ${ZONES.length} service areas. Currently selected: ${zone.name}.`}
+          >
             <defs>
               <radialGradient id="cov" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stopColor="oklch(0.72 0.16 152)" stopOpacity="0.35" />
@@ -767,6 +820,9 @@ function CoverageSection({ sectionRef }: { sectionRef: React.Ref<HTMLElement> })
                 strokeWidth={active === z.key ? 2 : 1}
                 className={`cov-zone ${active === z.key ? "is-active" : ""}`}
                 onClick={() => setActive(z.key)}
+                role="button"
+                aria-label={`${z.name} delivery zone. ETA ${z.eta}. Fee ${z.fee}.`}
+                aria-pressed={active === z.key}
               >
                 <title>{`${z.name} — ${z.eta}`}</title>
               </polygon>
