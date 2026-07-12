@@ -353,6 +353,98 @@ export function useParallax<T extends HTMLElement>(
  * Fade + slide-in when the element scrolls into view. Adds the
  * `is-revealed` class once intersecting.
  */
+/**
+ * Scroll-linked zoom. Scales the element between `from` and `to` based on
+ * the section's scroll progress through the viewport. Combines well with a
+ * background image to produce a smooth "video-like" zoom in/out as the user
+ * scrolls, without a rAF loop when off-screen.
+ */
+export function useScrollZoom<T extends HTMLElement>(
+  from = 1.35,
+  to = 1,
+  options?: { section?: { key: string; label: string } },
+) {
+  const ref = useRef<T | null>(null);
+  const globalEnabled = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const section = options?.section;
+  useEffect(() => {
+    if (section) registerSection(section.key, section.label);
+  }, [section?.key, section?.label]);
+  const sectionEnabled = useSyncExternalStore(
+    section ? subscribeSectionKey(section.key) : () => () => {},
+    () => (section ? getSectionEnabled(section.key) : true),
+    () => true,
+  );
+  const isEnabled = globalEnabled && sectionEnabled;
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof window === "undefined") return;
+
+    if (!isEnabled) {
+      el.style.transform = "";
+      return;
+    }
+    if (
+      typeof window.requestAnimationFrame !== "function" ||
+      typeof window.IntersectionObserver === "undefined"
+    ) {
+      el.style.transform = "";
+      return;
+    }
+
+    let inView = false;
+    let frame = 0;
+    const MIN_FRAME_MS = 1000 / 30;
+    let throttleAt = 0;
+
+    const update = () => {
+      frame = 0;
+      // Use the element's parent (the section container) for progress.
+      const target = (el.parentElement ?? el) as HTMLElement;
+      const rect = target.getBoundingClientRect();
+      const vh = window.innerHeight || 1;
+      // progress: 0 when section top hits viewport top, 1 when its bottom
+      // has scrolled past the viewport top.
+      const total = rect.height + vh;
+      const scrolled = vh - rect.top;
+      const p = Math.max(0, Math.min(1, scrolled / total));
+      const scale = from + (to - from) * p;
+      el.style.transform = `scale(${scale.toFixed(4)})`;
+    };
+
+    const onScroll = () => {
+      if (frame || !inView) return;
+      const now = performance.now();
+      if (now - throttleAt < MIN_FRAME_MS) return;
+      throttleAt = now;
+      frame = requestAnimationFrame(update);
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) inView = entry.isIntersecting;
+        if (inView) update();
+      },
+      { rootMargin: "20% 0px 20% 0px" },
+    );
+    io.observe(el);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    update();
+    return () => {
+      io.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+      el.style.transform = "";
+    };
+  }, [from, to, isEnabled]);
+
+  return ref;
+}
+
 export function useReveal<T extends HTMLElement>() {
   const ref = useRef<T | null>(null);
   const isEnabled = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);

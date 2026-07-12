@@ -6,7 +6,7 @@ import bottle1L from "@/assets/bottle-1l.jpg";
 import bottle5L from "@/assets/bottle-5l.jpg";
 import bottle10L from "@/assets/bottle-10l.jpg";
 import bottle20L from "@/assets/bottle-20l.jpg";
-import { useParallax, useReveal, useParallaxEnabled, useParallaxSections, setSectionParallaxEnabled } from "@/hooks/use-parallax";
+import { useParallax, useReveal, useParallaxEnabled, useParallaxSections, setSectionParallaxEnabled, useScrollZoom } from "@/hooks/use-parallax";
 import { useHideNear, useCountUp } from "@/hooks/use-hide-near";
 
 export const Route = createFileRoute("/")({
@@ -76,6 +76,7 @@ function Index() {
   const sections = useParallaxSections();
   const heroImgRef = useParallax<HTMLDivElement>(0.35, { section: { key: "hero", label: "Hero bottle" } });
   const heroPatternRef = useParallax<HTMLDivElement>(-0.2, { section: { key: "hero", label: "Hero bottle" } });
+  const heroZoomRef = useScrollZoom<HTMLDivElement>(1.35, 1.05, { section: { key: "hero", label: "Hero bottle" } });
   const productsBgRef = useParallax<HTMLDivElement>(-0.15, { section: { key: "products", label: "Products background" } });
   const ctaBgRef = useParallax<HTMLDivElement>(0.25, { section: { key: "cta", label: "Call-to-action glow" } });
   const servicesRevealRef = useReveal<HTMLDivElement>();
@@ -167,8 +168,9 @@ function Index() {
         {/* Cinematic zoom-out backdrop — "video-like" Ken Burns on a hero image */}
         <div className="absolute inset-0 -z-30 overflow-hidden" aria-hidden="true">
           <div
-            className="ken-burns absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${heroBottle})`, filter: "blur(2px) brightness(0.55) saturate(1.1)" }}
+            ref={heroZoomRef}
+            className="absolute inset-0 bg-cover bg-center will-change-transform"
+            style={{ backgroundImage: `url(${heroBottle})`, filter: "blur(2px) brightness(0.55) saturate(1.1)", transformOrigin: "center center" }}
           />
           <div className="absolute inset-0 bg-gradient-to-br from-brand/70 via-brand/50 to-black/60" />
         </div>
