@@ -8,6 +8,7 @@ import bottle10L from "@/assets/bottle-10l.jpg";
 import bottle20L from "@/assets/bottle-20l.jpg";
 import { useParallax, useReveal, useParallaxEnabled, useParallaxSections, setSectionParallaxEnabled, useScrollZoom } from "@/hooks/use-parallax";
 import { useHideNear, useCountUp } from "@/hooks/use-hide-near";
+import pureDropsLogo from "@/assets/pure-drops-logo-transparent.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -63,10 +64,16 @@ export const Route = createFileRoute("/")({
 const WA_URL = "https://wa.me/254141409800?text=Hi%20Pure%20Drops%2C%20I%27d%20like%20to%20order%20water.";
 const PHONE = "0141 409 800";
 
-const PureLogo = ({ className = "" }: { className?: string }) => (
-  <div className={`grid size-9 place-items-center rounded-full bg-brand ${className}`}>
-    <Droplet className="size-4 fill-white text-white" />
-  </div>
+const BRAND_TAGLINE = "Pure in every drop";
+
+const PureLogo = ({ className = "", variant = "dark" }: { className?: string; variant?: "dark" | "light" }) => (
+  <img
+    src={pureDropsLogo.url}
+    alt="Pure Drops Water Station logo"
+    width={655}
+    height={240}
+    className={`h-9 w-auto object-contain ${variant === "light" ? "brightness-0 invert" : ""} ${className}`}
+  />
 );
 
 function Index() {
@@ -127,9 +134,11 @@ function Index() {
     <div className="min-h-screen bg-white font-sans text-brand selection:bg-brand/10">
       {/* Glass Nav */}
       <nav className={`glass-nav ${scrolled ? "glass-nav-scrolled" : ""} sticky top-0 z-50 flex items-center justify-between px-6 py-4 transition-all duration-300`}>
-        <a href="#top" className="flex items-center gap-2">
-          <PureLogo />
-          <span className="text-lg font-extrabold uppercase tracking-tight">Pure Drops</span>
+        <a href="#top" className="flex items-center gap-3" aria-label="Pure Drops Water Station — Pure in every drop">
+          <PureLogo className="h-10" />
+          <span className="hidden text-[10px] font-semibold uppercase tracking-[0.22em] text-brand/60 sm:block">
+            {BRAND_TAGLINE}
+          </span>
         </a>
         <div className="hidden items-center gap-8 text-sm font-medium md:flex">
           <a href="#services" className="transition-colors hover:text-accent-green">Services</a>
@@ -336,8 +345,15 @@ function Index() {
                 <div className={`mb-8 font-mono text-xs ${p.highlight ? "opacity-60" : "opacity-70"}`}>{p.tier}</div>
                 <div className="mb-1 text-5xl font-black">{p.size}</div>
                 <div className="mb-8 text-xs font-bold uppercase text-accent-green">{p.label}</div>
-                <div className={`mb-8 grid aspect-square w-full place-items-center overflow-hidden rounded-xl ${p.highlight ? "bg-white/10" : "bg-surface"}`}>
-                  <img src={p.img} alt={`${p.size} bottle`} loading="lazy" width={512} height={512} className="h-full w-full object-contain p-4 transition-transform group-hover:scale-105" />
+                <div className={`relative mb-8 grid aspect-square w-full place-items-center overflow-hidden rounded-xl ${p.highlight ? "bg-white/10" : "bg-surface"}`}>
+                  <img src={p.img} alt={`Pure Drops ${p.size} bottled water — pure in every drop`} loading="lazy" width={512} height={512} className="h-full w-full object-contain p-4 transition-transform group-hover:scale-105" />
+                  {/* Brand label on the bottle */}
+                  <div className={`pointer-events-none absolute left-1/2 top-1/2 flex w-[62%] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1 rounded-md px-3 py-2 shadow-md ring-1 backdrop-blur-sm ${p.highlight ? "bg-white/95 ring-white/40" : "bg-white/90 ring-brand/10"}`}>
+                    <img src={pureDropsLogo.url} alt="" aria-hidden="true" className="h-6 w-auto object-contain" />
+                    <span className="text-[8px] font-semibold uppercase tracking-[0.18em] text-brand/70">
+                      {BRAND_TAGLINE}
+                    </span>
+                  </div>
                 </div>
                 <div className={`flex items-center justify-between border-t pt-6 ${p.highlight ? "border-white/10" : "border-brand/5"}`}>
                   <span className="text-lg font-bold">{p.price}</span>
@@ -567,10 +583,9 @@ function Index() {
           <div className="mb-24 grid gap-16 md:grid-cols-3">
             <div>
               <div className="mb-6 flex items-center gap-2">
-                <PureLogo />
-                <span className="text-lg font-extrabold uppercase tracking-tight">Pure Drops</span>
+                <PureLogo variant="light" className="h-11" />
               </div>
-              <h3 className="mb-6 text-2xl font-bold italic">Pure in Every Drop.</h3>
+              <h3 className="mb-6 text-2xl font-bold italic">Pure in every drop.</h3>
               <p className="mb-8 max-w-xs text-sm opacity-60">
                 Elevating hydration standards through advanced filtration and reliable logistics across Kenya.
               </p>
