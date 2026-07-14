@@ -345,8 +345,15 @@ function Index() {
                 <div className={`mb-8 font-mono text-xs ${p.highlight ? "opacity-60" : "opacity-70"}`}>{p.tier}</div>
                 <div className="mb-1 text-5xl font-black">{p.size}</div>
                 <div className="mb-8 text-xs font-bold uppercase text-accent-green">{p.label}</div>
-                <div className={`mb-8 grid aspect-square w-full place-items-center overflow-hidden rounded-xl ${p.highlight ? "bg-white/10" : "bg-surface"}`}>
-                  <img src={p.img} alt={`${p.size} bottle`} loading="lazy" width={512} height={512} className="h-full w-full object-contain p-4 transition-transform group-hover:scale-105" />
+                <div className={`relative mb-8 grid aspect-square w-full place-items-center overflow-hidden rounded-xl ${p.highlight ? "bg-white/10" : "bg-surface"}`}>
+                  <img src={p.img} alt={`Pure Drops ${p.size} bottled water — pure in every drop`} loading="lazy" width={512} height={512} className="h-full w-full object-contain p-4 transition-transform group-hover:scale-105" />
+                  {/* Brand label on the bottle */}
+                  <div className={`pointer-events-none absolute left-1/2 top-1/2 flex w-[62%] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1 rounded-md px-3 py-2 shadow-md ring-1 backdrop-blur-sm ${p.highlight ? "bg-white/95 ring-white/40" : "bg-white/90 ring-brand/10"}`}>
+                    <img src={pureDropsLogo.url} alt="" aria-hidden="true" className="h-6 w-auto object-contain" />
+                    <span className="text-[8px] font-semibold uppercase tracking-[0.18em] text-brand/70">
+                      {BRAND_TAGLINE}
+                    </span>
+                  </div>
                 </div>
                 <div className={`flex items-center justify-between border-t pt-6 ${p.highlight ? "border-white/10" : "border-brand/5"}`}>
                   <span className="text-lg font-bold">{p.price}</span>
