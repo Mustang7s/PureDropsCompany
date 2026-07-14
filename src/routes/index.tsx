@@ -576,10 +576,9 @@ function Index() {
           <div className="mb-24 grid gap-16 md:grid-cols-3">
             <div>
               <div className="mb-6 flex items-center gap-2">
-                <PureLogo />
-                <span className="text-lg font-extrabold uppercase tracking-tight">Pure Drops</span>
+                <PureLogo variant="light" className="h-11" />
               </div>
-              <h3 className="mb-6 text-2xl font-bold italic">Pure in Every Drop.</h3>
+              <h3 className="mb-6 text-2xl font-bold italic">Pure in every drop.</h3>
               <p className="mb-8 max-w-xs text-sm opacity-60">
                 Elevating hydration standards through advanced filtration and reliable logistics across Kenya.
               </p>
