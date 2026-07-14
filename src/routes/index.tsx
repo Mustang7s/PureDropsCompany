@@ -134,9 +134,11 @@ function Index() {
     <div className="min-h-screen bg-white font-sans text-brand selection:bg-brand/10">
       {/* Glass Nav */}
       <nav className={`glass-nav ${scrolled ? "glass-nav-scrolled" : ""} sticky top-0 z-50 flex items-center justify-between px-6 py-4 transition-all duration-300`}>
-        <a href="#top" className="flex items-center gap-2">
-          <PureLogo />
-          <span className="text-lg font-extrabold uppercase tracking-tight">Pure Drops</span>
+        <a href="#top" className="flex items-center gap-3" aria-label="Pure Drops Water Station — Pure in every drop">
+          <PureLogo className="h-10" />
+          <span className="hidden text-[10px] font-semibold uppercase tracking-[0.22em] text-brand/60 sm:block">
+            {BRAND_TAGLINE}
+          </span>
         </a>
         <div className="hidden items-center gap-8 text-sm font-medium md:flex">
           <a href="#services" className="transition-colors hover:text-accent-green">Services</a>
