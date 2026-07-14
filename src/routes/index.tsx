@@ -8,6 +8,7 @@ import bottle10L from "@/assets/bottle-10l.jpg";
 import bottle20L from "@/assets/bottle-20l.jpg";
 import { useParallax, useReveal, useParallaxEnabled, useParallaxSections, setSectionParallaxEnabled, useScrollZoom } from "@/hooks/use-parallax";
 import { useHideNear, useCountUp } from "@/hooks/use-hide-near";
+import pureDropsLogo from "@/assets/pure-drops-logo-transparent.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -63,10 +64,16 @@ export const Route = createFileRoute("/")({
 const WA_URL = "https://wa.me/254141409800?text=Hi%20Pure%20Drops%2C%20I%27d%20like%20to%20order%20water.";
 const PHONE = "0141 409 800";
 
-const PureLogo = ({ className = "" }: { className?: string }) => (
-  <div className={`grid size-9 place-items-center rounded-full bg-brand ${className}`}>
-    <Droplet className="size-4 fill-white text-white" />
-  </div>
+const BRAND_TAGLINE = "Pure in every drop";
+
+const PureLogo = ({ className = "", variant = "dark" }: { className?: string; variant?: "dark" | "light" }) => (
+  <img
+    src={pureDropsLogo.url}
+    alt="Pure Drops Water Station logo"
+    width={655}
+    height={240}
+    className={`h-9 w-auto object-contain ${variant === "light" ? "brightness-0 invert" : ""} ${className}`}
+  />
 );
 
 function Index() {
