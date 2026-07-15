@@ -11,7 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import pureDropsLogo from "../assets/pure-drops-logo-transparent.asset.json";
+const pureDropsLogo = { url: "/pure-drops-logo.png" };
 
 function NotFoundComponent() {
   return (
