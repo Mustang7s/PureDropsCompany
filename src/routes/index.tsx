@@ -8,7 +8,7 @@ import bottle10L from "@/assets/bottle-10l.jpg";
 import bottle20L from "@/assets/bottle-20l.jpg";
 import { useParallax, useReveal, useParallaxEnabled, useParallaxSections, setSectionParallaxEnabled, useScrollZoom } from "@/hooks/use-parallax";
 import { useHideNear, useCountUp } from "@/hooks/use-hide-near";
-import pureDropsLogo from "@/assets/pure-drops-logo-transparent.asset.json";
+const pureDropsLogo = { url: "/pure-drops-logo.png" };
 
 export const Route = createFileRoute("/")({
   head: () => ({
