@@ -66,13 +66,15 @@ const PHONE = "0141 409 800";
 
 const BRAND_TAGLINE = "Pure in every drop";
 
-const PureLogo = ({ className = "", variant = "dark" }: { className?: string; variant?: "dark" | "light" }) => (
+const PureLogo = ({ className = "" }: { className?: string; variant?: "dark" | "light" }) => (
   <img
     src={pureDropsLogo.url}
     alt="Pure Drops Water Station logo"
     width={655}
     height={240}
-    className={`h-9 w-auto object-contain ${variant === "light" ? "brightness-0 invert" : ""} ${className}`}
+    loading="eager"
+    decoding="async"
+    className={`h-9 w-auto object-contain ${className}`}
   />
 );
 
