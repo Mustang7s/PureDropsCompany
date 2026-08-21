@@ -100,12 +100,36 @@ function Index() {
   // the primary in-page CTA — anywhere the user is already engaged.
   const hideWa = useHideNear("[data-wa-hide]");
 
+  const [activeSection, setActiveSection] = useState("top");
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Highlight the nav link for whichever section is currently in view, so
+  // scrolling alone walks the user through services → products → trust …
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const ids = ["top", "services", "products", "trust", "coverage", "audience", "reviews"];
+    const els = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => Boolean(el));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActiveSection(visible.target.id);
+      },
+      { rootMargin: "-45% 0px -45% 0px", threshold: [0, 0.25, 0.5, 1] },
+    );
+    els.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
 
   const [purity, purityRef] = useCountUp(99.9);
   const [customers, customersRef] = useCountUp(2400);
