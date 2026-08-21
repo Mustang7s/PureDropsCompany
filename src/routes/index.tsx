@@ -167,13 +167,26 @@ function Index() {
           </span>
         </a>
         <div className="hidden items-center gap-8 text-sm font-medium md:flex">
-          <a href="#services" className="transition-colors hover:text-accent-green">Services</a>
-          <a href="#products" className="transition-colors hover:text-accent-green">Products</a>
-          <a href="#trust" className="transition-colors hover:text-accent-green">Trust</a>
-          <a href="#coverage" className="transition-colors hover:text-accent-green">Coverage</a>
-          <a href="#audience" className="transition-colors hover:text-accent-green">Who We Serve</a>
-          <a href="#reviews" className="transition-colors hover:text-accent-green">Reviews</a>
+          {[
+            { id: "services", label: "Services" },
+            { id: "products", label: "Products" },
+            { id: "trust", label: "Trust" },
+            { id: "coverage", label: "Coverage" },
+            { id: "audience", label: "Who We Serve" },
+            { id: "reviews", label: "Reviews" },
+          ].map((item) => (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              data-active={activeSection === item.id}
+              aria-current={activeSection === item.id ? "true" : undefined}
+              className="nav-link transition-colors hover:text-accent-green"
+            >
+              {item.label}
+            </a>
+          ))}
         </div>
+
         <div className="flex items-center gap-3">
           <button
             type="button"
