@@ -353,12 +353,25 @@
   }
 }
 
-/* ── Smooth scrolling + section "page roll" ───────────────────────────── */
+/* ── Smooth scrolling (Lenis) + section "page roll" ───────────────────── */
 html {
   scroll-behavior: smooth;
   /* Proximity snapping: sections settle into place as you scroll, but you can
      still stop mid-section (unlike mandatory snapping). */
   scroll-snap-type: y proximity;
+}
+
+/* Lenis drives scrolling with JS inertia — native smooth + snap fight it. */
+html.lenis-active {
+  scroll-behavior: auto;
+  scroll-snap-type: none;
+}
+html.lenis-active,
+html.lenis-active body {
+  height: auto;
+}
+html.lenis-active.lenis-stopped {
+  overflow: hidden;
 }
 
 /* Offset for the sticky glass nav so anchored sections aren't hidden. */
