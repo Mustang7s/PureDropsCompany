@@ -100,12 +100,36 @@ function Index() {
   // the primary in-page CTA — anywhere the user is already engaged.
   const hideWa = useHideNear("[data-wa-hide]");
 
+  const [activeSection, setActiveSection] = useState("top");
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Highlight the nav link for whichever section is currently in view, so
+  // scrolling alone walks the user through services → products → trust …
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const ids = ["top", "services", "products", "trust", "coverage", "audience", "reviews"];
+    const els = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => Boolean(el));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActiveSection(visible.target.id);
+      },
+      { rootMargin: "-45% 0px -45% 0px", threshold: [0, 0.25, 0.5, 1] },
+    );
+    els.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
 
   const [purity, purityRef] = useCountUp(99.9);
   const [customers, customersRef] = useCountUp(2400);
@@ -143,13 +167,26 @@ function Index() {
           </span>
         </a>
         <div className="hidden items-center gap-8 text-sm font-medium md:flex">
-          <a href="#services" className="transition-colors hover:text-accent-green">Services</a>
-          <a href="#products" className="transition-colors hover:text-accent-green">Products</a>
-          <a href="#trust" className="transition-colors hover:text-accent-green">Trust</a>
-          <a href="#coverage" className="transition-colors hover:text-accent-green">Coverage</a>
-          <a href="#audience" className="transition-colors hover:text-accent-green">Who We Serve</a>
-          <a href="#reviews" className="transition-colors hover:text-accent-green">Reviews</a>
+          {[
+            { id: "services", label: "Services" },
+            { id: "products", label: "Products" },
+            { id: "trust", label: "Trust" },
+            { id: "coverage", label: "Coverage" },
+            { id: "audience", label: "Who We Serve" },
+            { id: "reviews", label: "Reviews" },
+          ].map((item) => (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              data-active={activeSection === item.id}
+              aria-current={activeSection === item.id ? "true" : undefined}
+              className="nav-link transition-colors hover:text-accent-green"
+            >
+              {item.label}
+            </a>
+          ))}
         </div>
+
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -172,7 +209,7 @@ function Index() {
       </nav>
 
       {/* Cinematic Hero */}
-      <section id="top" className="relative isolate min-h-[92vh] overflow-hidden">
+      <section id="top" className="snap-sec relative isolate min-h-[92vh] overflow-hidden">
         {/* Cinematic zoom-out backdrop — "video-like" Ken Burns on a hero image */}
         <div className="absolute inset-0 -z-30 overflow-hidden" aria-hidden="true">
           <div
@@ -274,7 +311,7 @@ function Index() {
       </section>
 
       {/* Services */}
-      <section id="services" ref={servicesRevealRef} className="flip reveal mx-auto max-w-7xl px-6 py-24">
+      <section id="services" ref={servicesRevealRef} className="snap-sec flip reveal mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
             <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">What we do</h2>
@@ -319,7 +356,7 @@ function Index() {
       </section>
 
       {/* Products */}
-      <section id="products" className="relative overflow-hidden bg-surface px-6 py-24">
+      <section id="products" className="snap-sec relative overflow-hidden bg-surface px-6 py-24">
         <div
           ref={productsBgRef}
           className="parallax pointer-events-none absolute -right-32 -top-32 size-[28rem] rounded-full bg-brand/5 blur-3xl"
@@ -373,7 +410,7 @@ function Index() {
       </section>
 
       {/* Trust / Certifications */}
-      <section id="trust" ref={trustRevealRef} className="flip reveal mx-auto max-w-7xl px-6 py-24">
+      <section id="trust" ref={trustRevealRef} className="snap-sec flip reveal mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 max-w-2xl">
           <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">Trust & Certification</h2>
           <p className="text-4xl font-bold tracking-tight">Verified quality, from source to seal.</p>
@@ -399,7 +436,7 @@ function Index() {
       <CoverageSection sectionRef={coverageRevealRef} />
 
       {/* Audience */}
-      <section id="audience" ref={audienceRevealRef} className="flip reveal mx-auto max-w-7xl px-6 py-24">
+      <section id="audience" ref={audienceRevealRef} className="snap-sec flip reveal mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 max-w-2xl">
           <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">Who we serve</h2>
           <p className="text-4xl font-bold tracking-tight">Hydrating Homes, Offices & Shops.</p>
@@ -420,7 +457,7 @@ function Index() {
       </section>
 
       {/* Testimonials */}
-      <section id="reviews" className="bg-surface px-6 py-24">
+      <section id="reviews" className="snap-sec bg-surface px-6 py-24">
         <div ref={reviewsRevealRef} className="flip reveal mx-auto grid max-w-7xl gap-12 lg:grid-cols-3">
           <div className="lg:col-span-1">
             <h2 className="mb-6 text-4xl font-bold tracking-tight">Trusted by families & businesses.</h2>
@@ -710,7 +747,7 @@ function CoverageSection({ sectionRef }: { sectionRef: React.Ref<HTMLElement> })
     <section
       id="coverage"
       ref={sectionRef}
-      className="flip reveal relative overflow-hidden bg-surface px-6 py-24"
+      className="snap-sec flip reveal relative overflow-hidden bg-surface px-6 py-24"
       aria-labelledby="coverage-heading"
     >
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1.4fr] lg:items-center">

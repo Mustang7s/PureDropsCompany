@@ -352,3 +352,50 @@
     transition: none;
   }
 }
+
+/* ── Smooth scrolling + section "page roll" ───────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  /* Proximity snapping: sections settle into place as you scroll, but you can
+     still stop mid-section (unlike mandatory snapping). */
+  scroll-snap-type: y proximity;
+}
+
+/* Offset for the sticky glass nav so anchored sections aren't hidden. */
+.snap-sec {
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+  scroll-margin-top: 80px;
+}
+
+/* Active nav link indicator */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent-green);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link[data-active="true"]::after {
+  transform: scaleX(1);
+}
+.nav-link[data-active="true"] {
+  color: var(--accent-green);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+    scroll-snap-type: none;
+  }
+  .nav-link::after { transition: none; }
+}
