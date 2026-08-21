@@ -172,7 +172,7 @@ function Index() {
       </nav>
 
       {/* Cinematic Hero */}
-      <section id="top" className="relative isolate min-h-[92vh] overflow-hidden">
+      <section id="top" className="snap-sec relative isolate min-h-[92vh] overflow-hidden">
         {/* Cinematic zoom-out backdrop — "video-like" Ken Burns on a hero image */}
         <div className="absolute inset-0 -z-30 overflow-hidden" aria-hidden="true">
           <div
@@ -274,7 +274,7 @@ function Index() {
       </section>
 
       {/* Services */}
-      <section id="services" ref={servicesRevealRef} className="flip reveal mx-auto max-w-7xl px-6 py-24">
+      <section id="services" ref={servicesRevealRef} className="snap-sec flip reveal mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
             <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">What we do</h2>
@@ -319,7 +319,7 @@ function Index() {
       </section>
 
       {/* Products */}
-      <section id="products" className="relative overflow-hidden bg-surface px-6 py-24">
+      <section id="products" className="snap-sec relative overflow-hidden bg-surface px-6 py-24">
         <div
           ref={productsBgRef}
           className="parallax pointer-events-none absolute -right-32 -top-32 size-[28rem] rounded-full bg-brand/5 blur-3xl"
@@ -373,7 +373,7 @@ function Index() {
       </section>
 
       {/* Trust / Certifications */}
-      <section id="trust" ref={trustRevealRef} className="flip reveal mx-auto max-w-7xl px-6 py-24">
+      <section id="trust" ref={trustRevealRef} className="snap-sec flip reveal mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 max-w-2xl">
           <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">Trust & Certification</h2>
           <p className="text-4xl font-bold tracking-tight">Verified quality, from source to seal.</p>
@@ -399,7 +399,7 @@ function Index() {
       <CoverageSection sectionRef={coverageRevealRef} />
 
       {/* Audience */}
-      <section id="audience" ref={audienceRevealRef} className="flip reveal mx-auto max-w-7xl px-6 py-24">
+      <section id="audience" ref={audienceRevealRef} className="snap-sec flip reveal mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 max-w-2xl">
           <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">Who we serve</h2>
           <p className="text-4xl font-bold tracking-tight">Hydrating Homes, Offices & Shops.</p>
@@ -420,7 +420,7 @@ function Index() {
       </section>
 
       {/* Testimonials */}
-      <section id="reviews" className="bg-surface px-6 py-24">
+      <section id="reviews" className="snap-sec bg-surface px-6 py-24">
         <div ref={reviewsRevealRef} className="flip reveal mx-auto grid max-w-7xl gap-12 lg:grid-cols-3">
           <div className="lg:col-span-1">
             <h2 className="mb-6 text-4xl font-bold tracking-tight">Trusted by families & businesses.</h2>
@@ -710,7 +710,7 @@ function CoverageSection({ sectionRef }: { sectionRef: React.Ref<HTMLElement> })
     <section
       id="coverage"
       ref={sectionRef}
-      className="flip reveal relative overflow-hidden bg-surface px-6 py-24"
+      className="snap-sec snap-sec flip reveal relative overflow-hidden bg-surface px-6 py-24"
       aria-labelledby="coverage-heading"
     >
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1.4fr] lg:items-center">
