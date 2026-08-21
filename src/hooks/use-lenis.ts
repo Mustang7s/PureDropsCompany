@@ -3,7 +3,7 @@ import Lenis from "lenis";
 
 /**
  * Lenis smooth scrolling (same feel as the reference site):
- * inertia-based wheel/touch scrolling with easing.
+ * inertia-based wheel/touch scrolling with lerp smoothing.
  * Disabled automatically when the user prefers reduced motion.
  */
 export function useLenis() {
@@ -13,10 +13,13 @@ export function useLenis() {
     if (reduced) return;
 
     const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      // lerp gives a continuous, frame-rate independent glide (nicer than
+      // duration-based easing for free wheel scrolling).
+      lerp: 0.09,
       smoothWheel: true,
-      touchMultiplier: 1.6,
+      syncTouch: true,
+      syncTouchLerp: 0.075,
+      touchMultiplier: 1.2,
       wheelMultiplier: 1,
       anchors: { offset: -80 },
     });

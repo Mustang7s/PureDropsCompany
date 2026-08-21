@@ -156,8 +156,8 @@
 /* Parallax + scroll reveal */
 .parallax {
   will-change: transform;
-  transition: transform 0.05s linear;
 }
+
 
 .reveal {
   opacity: 0;
@@ -362,17 +362,27 @@ html {
 }
 
 /* Lenis drives scrolling with JS inertia — native smooth + snap fight it. */
+html.lenis,
 html.lenis-active {
-  scroll-behavior: auto;
+  scroll-behavior: auto !important;
   scroll-snap-type: none;
 }
+html.lenis,
+html.lenis body,
 html.lenis-active,
 html.lenis-active body {
   height: auto;
 }
-html.lenis-active.lenis-stopped {
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
   overflow: hidden;
 }
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
 
 /* Offset for the sticky glass nav so anchored sections aren't hidden. */
 .snap-sec {
