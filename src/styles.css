@@ -156,8 +156,8 @@
 /* Parallax + scroll reveal */
 .parallax {
   will-change: transform;
-  transition: transform 0.05s linear;
 }
+
 
 .reveal {
   opacity: 0;
