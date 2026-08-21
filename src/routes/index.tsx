@@ -710,7 +710,7 @@ function CoverageSection({ sectionRef }: { sectionRef: React.Ref<HTMLElement> })
     <section
       id="coverage"
       ref={sectionRef}
-      className="snap-sec snap-sec flip reveal relative overflow-hidden bg-surface px-6 py-24"
+      className="snap-sec flip reveal relative overflow-hidden bg-surface px-6 py-24"
       aria-labelledby="coverage-heading"
     >
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1.4fr] lg:items-center">
