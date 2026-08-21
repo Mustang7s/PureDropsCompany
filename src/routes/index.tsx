@@ -8,6 +8,7 @@ import bottle10L from "@/assets/bottle-10l.jpg";
 import bottle20L from "@/assets/bottle-20l.jpg";
 import { useParallax, useReveal, useParallaxEnabled, useParallaxSections, setSectionParallaxEnabled, useScrollZoom } from "@/hooks/use-parallax";
 import { useHideNear, useCountUp } from "@/hooks/use-hide-near";
+import { useLenis } from "@/hooks/use-lenis";
 const pureDropsLogo = { url: "/pure-drops-logo.png" };
 
 export const Route = createFileRoute("/")({
@@ -81,6 +82,7 @@ const PureLogo = ({ className = "" }: { className?: string; variant?: "dark" | "
 function Index() {
   const [parallaxOn, setParallaxOn] = useParallaxEnabled();
   const [motionPanelOpen, setMotionPanelOpen] = useState(false);
+  useLenis();
   const [scrolled, setScrolled] = useState(false);
   const sections = useParallaxSections();
   const heroImgRef = useParallax<HTMLDivElement>(0.35, { section: { key: "hero", label: "Hero bottle" } });
