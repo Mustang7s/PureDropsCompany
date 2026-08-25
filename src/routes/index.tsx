@@ -459,7 +459,9 @@ function Index() {
             </div>
           ))}
         </div>
+        </div>
       </section>
+
 
       {/* Delivery coverage map */}
       <CoverageSection sectionRef={coverageRevealRef} />
