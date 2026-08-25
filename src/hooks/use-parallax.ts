@@ -398,11 +398,8 @@ export function useScrollZoom<T extends HTMLElement>(
 
     let inView = false;
     let frame = 0;
-    const MIN_FRAME_MS = 1000 / 30;
-    let throttleAt = 0;
 
     const update = () => {
-      frame = 0;
       // Use the element's parent (the section container) for progress.
       const target = (el.parentElement ?? el) as HTMLElement;
       const rect = target.getBoundingClientRect();
@@ -416,32 +413,35 @@ export function useScrollZoom<T extends HTMLElement>(
       el.style.transform = `scale(${scale.toFixed(4)})`;
     };
 
-    const onScroll = () => {
-      if (frame || !inView) return;
-      const now = performance.now();
-      if (now - throttleAt < MIN_FRAME_MS) return;
-      throttleAt = now;
-      frame = requestAnimationFrame(update);
+    const loop = () => {
+      update();
+      if (frame) frame = requestAnimationFrame(loop);
+    };
+    const start = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(loop);
+    };
+    const stop = () => {
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
     };
 
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) inView = entry.isIntersecting;
-        if (inView) update();
+        if (inView) start();
+        else stop();
       },
       { rootMargin: "20% 0px 20% 0px" },
     );
     io.observe(el);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
     update();
     return () => {
       io.disconnect();
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (frame) cancelAnimationFrame(frame);
+      stop();
       el.style.transform = "";
     };
+
   }, [from, to, isEnabled]);
 
   return ref;
