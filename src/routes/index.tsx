@@ -104,12 +104,26 @@ function Index() {
 
   const [activeSection, setActiveSection] = useState("top");
 
+  // Hide the nav while scrolling down, reveal it on scroll up (or at the top),
+  // so moving between sections gives a clean, full-bleed view.
+  const [navHidden, setNavHidden] = useState(false);
+
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 24);
+      const delta = y - lastY;
+      if (Math.abs(delta) > 6) {
+        setNavHidden(delta > 0 && y > 120);
+        lastY = y;
+      }
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
 
   // Highlight the nav link for whichever section is currently in view, so
   // scrolling alone walks the user through services → products → trust …
