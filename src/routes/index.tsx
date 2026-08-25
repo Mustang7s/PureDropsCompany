@@ -433,10 +433,14 @@ function Index() {
           </div>
         </div>
       </section>
+      </div>
+      {/* ── end overlapping stack ─────────────────────────────────────── */}
 
-      {/* Trust / Certifications */}
-      <section id="trust" ref={trustRevealRef} className="snap-sec flip reveal mx-auto max-w-7xl px-6 py-24">
+      {/* Trust / Certifications — slides up over the sticky stack */}
+      <section id="trust" className="snap-sec aqua-panel relative z-40 -mt-8 rounded-t-[2.5rem] bg-white px-6 py-24 shadow-[0_-24px_60px_-30px_oklch(0.32_0.14_264_/_0.35)]">
+        <div ref={trustRevealRef} className="flip reveal mx-auto max-w-7xl">
         <div className="mb-16 max-w-2xl">
+
           <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">Trust & Certification</h2>
           <p className="text-4xl font-bold tracking-tight">Verified quality, from source to seal.</p>
         </div>
