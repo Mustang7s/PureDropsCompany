@@ -381,7 +381,7 @@ function Index() {
       </section>
 
       {/* Products */}
-      <section id="products" className="snap-sec relative overflow-hidden bg-surface px-6 py-24">
+      <section id="products" className="snap-sec aqua-panel sticky top-0 z-30 overflow-hidden rounded-t-[2.5rem] bg-surface px-6 py-24 shadow-[0_-24px_60px_-30px_oklch(0.32_0.14_264_/_0.35)]">
         <div
           ref={productsBgRef}
           className="parallax pointer-events-none absolute -right-32 -top-32 size-[28rem] rounded-full bg-brand/5 blur-3xl"
