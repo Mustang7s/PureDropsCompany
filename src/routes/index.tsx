@@ -104,12 +104,26 @@ function Index() {
 
   const [activeSection, setActiveSection] = useState("top");
 
+  // Hide the nav while scrolling down, reveal it on scroll up (or at the top),
+  // so moving between sections gives a clean, full-bleed view.
+  const [navHidden, setNavHidden] = useState(false);
+
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 24);
+      const delta = y - lastY;
+      if (Math.abs(delta) > 6) {
+        setNavHidden(delta > 0 && y > 120);
+        lastY = y;
+      }
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
 
   // Highlight the nav link for whichever section is currently in view, so
   // scrolling alone walks the user through services → products → trust …
@@ -161,7 +175,7 @@ function Index() {
   return (
     <div className="min-h-screen bg-white font-sans text-brand selection:bg-brand/10">
       {/* Glass Nav */}
-      <nav className={`glass-nav ${scrolled ? "glass-nav-scrolled" : ""} sticky top-0 z-50 flex items-center justify-between px-6 py-4 transition-all duration-300`}>
+      <nav className={`glass-nav ${scrolled ? "glass-nav-scrolled" : ""} ${navHidden ? "-translate-y-full" : "translate-y-0"} sticky top-0 z-50 flex items-center justify-between px-6 py-4 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]`}>
         <a href="#top" className="flex items-center gap-3" aria-label="Pure Drops Water Station — Pure in every drop">
           <PureLogo className="h-10" />
           <span className="hidden text-[10px] font-semibold uppercase tracking-[0.22em] text-brand/60 sm:block">
@@ -312,9 +326,15 @@ function Index() {
         </div>
       </section>
 
+      {/* ── Overlapping stack: services → stats → products ─────────────
+          Each panel is sticky at the top, so the next one slides up and
+          overlaps the previous one as you scroll (stackhealthcare-style). */}
+      <div className="relative">
       {/* Services */}
-      <section id="services" ref={servicesRevealRef} className="snap-sec flip reveal mx-auto max-w-7xl px-6 py-24">
+      <section id="services" className="snap-sec aqua-panel sticky top-0 z-10 overflow-hidden rounded-t-[2.5rem] bg-white px-6 py-24 shadow-[0_-24px_60px_-30px_oklch(0.32_0.14_264_/_0.35)]">
+        <div ref={servicesRevealRef} className="flip reveal mx-auto max-w-7xl">
         <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+
           <div>
             <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">What we do</h2>
             <p className="text-4xl font-bold tracking-tight">Purity, end-to-end.</p>
@@ -334,12 +354,15 @@ function Index() {
             </div>
           ))}
         </div>
+        </div>
       </section>
 
       {/* Stats counters */}
-      <section ref={statsRevealRef} className="flip reveal relative overflow-hidden bg-brand px-6 py-24 text-white">
+      <section className="aqua-panel sticky top-0 z-20 overflow-hidden rounded-t-[2.5rem] bg-brand px-6 py-24 text-white shadow-[0_-24px_60px_-30px_oklch(0.32_0.14_264_/_0.55)]">
+
         <div className="pointer-events-none absolute -left-32 -top-32 size-[28rem] rounded-full bg-accent-green/20 blur-3xl" aria-hidden="true" />
-        <div className="relative mx-auto grid max-w-7xl gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div ref={statsRevealRef} className="flip reveal relative mx-auto grid max-w-7xl gap-10 sm:grid-cols-2 lg:grid-cols-4">
+
           {[
             { r: purityRef, v: purity, suffix: "%", label: "Water Purity", fmt: (n: number) => n.toFixed(1) },
             { r: uptimeRef, v: uptime, suffix: "/7", label: "Supply Uptime", fmt: (n: number) => Math.round(n).toString() },
@@ -358,7 +381,7 @@ function Index() {
       </section>
 
       {/* Products */}
-      <section id="products" className="snap-sec relative overflow-hidden bg-surface px-6 py-24">
+      <section id="products" className="snap-sec aqua-panel sticky top-0 z-30 overflow-hidden rounded-t-[2.5rem] bg-surface px-6 py-24 shadow-[0_-24px_60px_-30px_oklch(0.32_0.14_264_/_0.35)]">
         <div
           ref={productsBgRef}
           className="parallax pointer-events-none absolute -right-32 -top-32 size-[28rem] rounded-full bg-brand/5 blur-3xl"
@@ -410,10 +433,14 @@ function Index() {
           </div>
         </div>
       </section>
+      </div>
+      {/* ── end overlapping stack ─────────────────────────────────────── */}
 
-      {/* Trust / Certifications */}
-      <section id="trust" ref={trustRevealRef} className="snap-sec flip reveal mx-auto max-w-7xl px-6 py-24">
+      {/* Trust / Certifications — slides up over the sticky stack */}
+      <section id="trust" className="snap-sec aqua-panel relative z-40 -mt-8 rounded-t-[2.5rem] bg-white px-6 py-24 shadow-[0_-24px_60px_-30px_oklch(0.32_0.14_264_/_0.35)]">
+        <div ref={trustRevealRef} className="flip reveal mx-auto max-w-7xl">
         <div className="mb-16 max-w-2xl">
+
           <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">Trust & Certification</h2>
           <p className="text-4xl font-bold tracking-tight">Verified quality, from source to seal.</p>
         </div>
@@ -432,7 +459,9 @@ function Index() {
             </div>
           ))}
         </div>
+        </div>
       </section>
+
 
       {/* Delivery coverage map */}
       <CoverageSection sectionRef={coverageRevealRef} />

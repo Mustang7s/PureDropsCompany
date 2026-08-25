@@ -422,3 +422,36 @@ html.lenis-active body {
   }
   .nav-link::after { transition: none; }
 }
+
+/* ── Water-themed panel backdrops ─────────────────────────────────────
+   Subtle aqua light-pools + a faint droplet ripple, layered behind the
+   panel content so sections feel "liquid" without hurting readability. */
+.aqua-panel {
+  position: relative;
+}
+.aqua-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(38% 45% at 12% 8%, color-mix(in oklab, var(--accent-green) 12%, transparent), transparent 70%),
+    radial-gradient(45% 50% at 88% 18%, color-mix(in oklab, var(--brand) 10%, transparent), transparent 72%),
+    radial-gradient(60% 40% at 50% 110%, color-mix(in oklab, var(--brand) 8%, transparent), transparent 70%);
+}
+.aqua-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Rounded stacking panels get a soft top highlight, like a water meniscus */
+.aqua-panel::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, white 70%, transparent), transparent);
+}
