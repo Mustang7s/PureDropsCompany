@@ -282,27 +282,25 @@ export function useParallax<T extends HTMLElement>(
       return;
     }
 
-    // Only run the rAF loop while the element is actually in the viewport.
-    // This avoids burning CPU on off-screen sections — a meaningful win on
-    // low-end devices with many parallax targets.
+    // Run a continuous rAF loop only while the element is in the viewport so
+    // the transform updates on every painted frame (matching Lenis' own loop)
+    // instead of lagging behind throttled scroll events.
     let inView = false;
     let frame = 0;
     let lastFrameAt = 0;
     let slowFrames = 0;
     let disabledForPerf = false;
-    // Cap updates to ~30fps on devices that show signs of jank.
-    const MIN_FRAME_MS = 1000 / 30;
 
     const update = () => {
-      frame = 0;
       const now = performance.now();
-      // If a frame took >50ms, count it as slow. 5 slow frames in a row →
+      // If a frame took >80ms, count it as slow. 10 slow frames in a row →
       // give up and leave the element static for the rest of the session.
-      if (lastFrameAt && now - lastFrameAt > 50) {
+      if (lastFrameAt && now - lastFrameAt > 80) {
         slowFrames += 1;
-        if (slowFrames >= 5) {
+        if (slowFrames >= 10) {
           disabledForPerf = true;
           el.style.transform = "";
+          stop();
           return;
         }
       } else {
@@ -316,34 +314,38 @@ export function useParallax<T extends HTMLElement>(
       const offset = -progress * speed * 100;
       el.style.transform = `translate3d(0, ${offset.toFixed(2)}px, 0)`;
     };
-    let throttleAt = 0;
-    const onScroll = () => {
-      if (frame || !inView || disabledForPerf) return;
-      const now = performance.now();
-      if (now - throttleAt < MIN_FRAME_MS) return;
-      throttleAt = now;
-      frame = requestAnimationFrame(update);
+
+    const loop = () => {
+      update();
+      if (frame) frame = requestAnimationFrame(loop);
     };
+    const start = () => {
+      if (frame || disabledForPerf) return;
+      lastFrameAt = 0;
+      frame = requestAnimationFrame(loop);
+    };
+    function stop() {
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+    }
 
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           inView = entry.isIntersecting;
         }
-        if (inView && !disabledForPerf) update();
+        if (inView) start();
+        else stop();
       },
       { rootMargin: "20% 0px 20% 0px" },
     );
     io.observe(el);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
     return () => {
       io.disconnect();
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (frame) cancelAnimationFrame(frame);
+      stop();
       el.style.transform = "";
     };
+
   }, [speed, isEnabled]);
 
   return ref;
