@@ -354,10 +354,12 @@ function Index() {
             </div>
           ))}
         </div>
+        </div>
       </section>
 
       {/* Stats counters */}
-      <section ref={statsRevealRef} className="flip reveal relative overflow-hidden bg-brand px-6 py-24 text-white">
+      <section className="aqua-panel sticky top-0 z-20 overflow-hidden rounded-t-[2.5rem] bg-brand px-6 py-24 text-white shadow-[0_-24px_60px_-30px_oklch(0.32_0.14_264_/_0.55)]">
+
         <div className="pointer-events-none absolute -left-32 -top-32 size-[28rem] rounded-full bg-accent-green/20 blur-3xl" aria-hidden="true" />
         <div className="relative mx-auto grid max-w-7xl gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {[
