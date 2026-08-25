@@ -326,9 +326,15 @@ function Index() {
         </div>
       </section>
 
+      {/* ── Overlapping stack: services → stats → products ─────────────
+          Each panel is sticky at the top, so the next one slides up and
+          overlaps the previous one as you scroll (stackhealthcare-style). */}
+      <div className="relative">
       {/* Services */}
-      <section id="services" ref={servicesRevealRef} className="snap-sec flip reveal mx-auto max-w-7xl px-6 py-24">
+      <section id="services" className="snap-sec aqua-panel sticky top-0 z-10 overflow-hidden rounded-t-[2.5rem] bg-white px-6 py-24 shadow-[0_-24px_60px_-30px_oklch(0.32_0.14_264_/_0.35)]">
+        <div ref={servicesRevealRef} className="flip reveal mx-auto max-w-7xl">
         <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+
           <div>
             <h2 className="mb-2 font-mono text-xs font-bold uppercase tracking-widest text-accent-green">What we do</h2>
             <p className="text-4xl font-bold tracking-tight">Purity, end-to-end.</p>
