@@ -175,7 +175,7 @@ function Index() {
   return (
     <div className="min-h-screen bg-white font-sans text-brand selection:bg-brand/10">
       {/* Glass Nav */}
-      <nav className={`glass-nav ${scrolled ? "glass-nav-scrolled" : ""} sticky top-0 z-50 flex items-center justify-between px-6 py-4 transition-all duration-300`}>
+      <nav className={`glass-nav ${scrolled ? "glass-nav-scrolled" : ""} ${navHidden ? "-translate-y-full" : "translate-y-0"} sticky top-0 z-50 flex items-center justify-between px-6 py-4 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]`}>
         <a href="#top" className="flex items-center gap-3" aria-label="Pure Drops Water Station — Pure in every drop">
           <PureLogo className="h-10" />
           <span className="hidden text-[10px] font-semibold uppercase tracking-[0.22em] text-brand/60 sm:block">
